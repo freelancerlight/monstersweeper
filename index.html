@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            #Scene {
+                font-family: "Courier New", Courier, monospace;
+            }
+        </style>
+    </head>
+    <body>
+        <p id="Scene">Test</p>
+    </body>
+    <script>
+        const map_size = 15
+        const map_indexMax = Math.pow(map_size, 2);
+        let player_index = Math.ceil(map_indexMax / 2);
+        
+        //Generate Map Digged
+        const map_digged = []
+        for (let i_y = -1; i_y < 2; i_y++) {for (let i_x = -1; i_x < 2; i_x++) {map_digged.push(player_index - i_y * map_size - i_x)}}
+        console.log("Map Digged: " + map_digged)
+
+        //Generate Map Border
+        const map_border = []
+        for (let i = 1; i <= map_size; i++) {map_border.push(i); map_border.push(map_indexMax - i + 1)}
+        for (let i = 1; i <= map_size - 2; i++) {map_border.push(1 + map_size * i); map_border.push(map_size * (1 + i))};
+        console.log("Map Border: " + map_border)
+        
+        //Generete Monster
+        const map_monster = []
+        for (let i = 0; i < 10;) {let monster_i = Math.ceil(Math.random() * map_indexMax); if (!map_digged.includes(monster_i) && !map_monster.includes(monster_i)) {map_monster.push(monster_i); i++}}
+        console.log("Map Monster: " + map_monster)
+    </script>
+</html>

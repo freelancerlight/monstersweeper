@@ -6,9 +6,11 @@
                 font-family: "Courier New", Courier, monospace;
             }
         </style>
+        <title>Monstersweeper</title>
     </head>
     <body>
-        <p id="Scene">Loading...</p>
+        <p id="Scene">Loading... (if a second passed, then the game is broken)</p>
+        <button onclick="clearInterval(game_clock)">Stop Game</button>
     </body>
     <script>
         const map_size = 15
@@ -16,34 +18,33 @@
         let player_i = Math.ceil(map_iMax / 2);
         
         //Generate Map Digged
-        const map_digged = []
-        for (let i_y = -1; i_y < 2; i_y++) {for (let i_x = -1; i_x < 2; i_x++) {map_digged.push(player_i - i_y * map_size - i_x)}}
-        console.log("Map Digged: " + map_digged)
+        const map_diggeds = []
+        for (let i_y = -1; i_y < 2; i_y++) {for (let i_x = -1; i_x < 2; i_x++) {map_diggeds.push(player_i - i_y * map_size - i_x)}}
+        console.log("Map Diggeds: " + map_diggeds)
 
         //Generate Map Border
-        const map_border = []
-        for (let i = 1; i <= map_size; i++) {map_border.push(i); map_border.push(map_iMax - i + 1)}
-        for (let i = 1; i <= map_size - 2; i++) {map_border.push(1 + map_size * i); map_border.push(map_size * (1 + i))};
-        console.log("Map Border: " + map_border)
+        const map_borders = []
+        for (let i = 1; i <= map_size; i++) {map_borders.push(i); map_borders.push(map_iMax - i + 1)}
+        for (let i = 1; i <= map_size - 2; i++) {map_borders.push(1 + map_size * i); map_borders.push(map_size * (1 + i))};
+        console.log("Map Borders: " + map_borders)
         
         //Generete Monster
-        const map_monster = []
-        for (let i = 0; i < 10;) {let monster_i = Math.ceil(Math.random() * map_iMax); if (!map_digged.includes(monster_i) && !map_monster.includes(monster_i)) {map_monster.push(monster_i); i++}}
-        console.log("Map Monster: " + map_monster)
+        const map_monsters = []
+        for (let i = 0; i < 10;) {let monster_i = Math.ceil(Math.random() * map_iMax); if (!map_diggeds.includes(monster_i) && !map_monsters.includes(monster_i)) {map_monsters.push(monster_i); i++}}
+        console.log("Map Monsters: " + map_monsters)
 
-        
+        let game_clock = setInterval(game_update, 100)        
         function game_update() {
             let scene_text = ""
 
             //Generate Scene
             for (let i = 1, x_i = 0; i <= map_iMax; i++) {
-                if (i == player_i) {scene_text += "@"} else if (map_border.includes(i)) {scene_text += "#"} else {scene_text += ".";}
+                if (i == player_i) {scene_text += "@"} else if (map_borders.includes(i)) {scene_text += "X"} else if (map_monsters.includes(i) && map_diggeds.includes(i)) {game_text += "!"} else if (!map_diggeds.includes(i)) {scene_text += "#"} else {scene_text += ".";}
                 x_i++
                 if (x_i == map_size) {scene_text += "<br>"; x_i = 0}
             }
             
             document.getElementById("Scene").innerHTML = scene_text
         }
-        game_update()
     </script>
 </html>

@@ -39,7 +39,7 @@
 
             //Generate Scene
             for (let i = 1, x_i = 0; i <= map_iMax; i++) {
-                if (i == player_i) {scene_text += "@"} else if (map_borders.includes(i)) {scene_text += "X"} else if (map_monsters.includes(i) && map_diggeds.includes(i)) {game_text += "!"} else if (!map_diggeds.includes(i)) {scene_text += "#"} else {scene_text += ".";}
+                if (i == player_i) {scene_text += "@"} else if (map_borders.includes(i)) {scene_text += "X"} else if (map_monsters.includes(i) && map_diggeds.includes(i)) {game_text += "!"} else if (!map_diggeds.includes(i)) {scene_text += "#"} else {let v = 0; for (let i_y = -1; i_y < 2; i_y++) {for (let i_x = -1; i_x < 2; i_x++) {if (map_monsters.includes(i - i_x - i_y * map_size)) {v++}}}; (v > 0) ? scene_text += v : scene_text += "."}
                 x_i++
                 if (x_i == map_size) {scene_text += "<br>"; x_i = 0}
             }

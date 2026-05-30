@@ -16,11 +16,6 @@
         const map_size = 15
         const map_iMax = Math.pow(map_size, 2);
         let player_i = Math.ceil(map_iMax / 2);
-        
-        //Generate Map Digged
-        const map_diggeds = []
-        for (let i_y = -1; i_y < 2; i_y++) {for (let i_x = -1; i_x < 2; i_x++) {map_diggeds.push(player_i - i_y * map_size - i_x)}}
-        console.log("Map Diggeds: " + map_diggeds)
 
         //Generate Map Border
         const map_borders = []
@@ -28,9 +23,14 @@
         for (let i = 1; i <= map_size - 2; i++) {map_borders.push(1 + map_size * i); map_borders.push(map_size * (1 + i))};
         console.log("Map Borders: " + map_borders)
         
+        //Generate Map Digged
+        const map_diggeds = []
+        for (let i_y = -1; i_y < 2; i_y++) {for (let i_x = -1; i_x < 2; i_x++) {map_diggeds.push(player_i - i_y * map_size - i_x)}}
+        console.log("Map Diggeds: " + map_diggeds)
+
         //Generate Monster
         const map_monsters = []
-        for (let i = 0; i < 10;) {let monster_i = Math.ceil(Math.random() * map_iMax); if (!map_diggeds.includes(monster_i) && !map_monsters.includes(monster_i)) {map_monsters.push(monster_i); i++}}
+        for (let i = 0; i < 10;) {let monster_i = Math.ceil(Math.random() * map_iMax); if (!map_borders.includes(monster_i) && !map_diggeds.includes(monster_i) && !map_monsters.includes(monster_i)) {map_monsters.push(monster_i); i++}}
         console.log("Map Monsters: " + map_monsters)
 
         //Player Action

@@ -28,27 +28,43 @@
         for (let i = 1; i <= map_size - 2; i++) {map_borders.push(1 + map_size * i); map_borders.push(map_size * (1 + i))};
         console.log("Map Borders: " + map_borders)
         
-        //Generete Monster
+        //Generate Monster
         const map_monsters = []
         for (let i = 0; i < 10;) {let monster_i = Math.ceil(Math.random() * map_iMax); if (!map_diggeds.includes(monster_i) && !map_monsters.includes(monster_i)) {map_monsters.push(monster_i); i++}}
         console.log("Map Monsters: " + map_monsters)
 
-        //Player Movement
+        //Player Action
         function player_movement(_direction) {
             if (!map_borders.includes(player_i + _direction)) {player_i += _direction}
         }
         window.addEventListener("keydown", function (event) {
-            player_movement(Number(event.key == "d") - Number(event.key == "a"))
-            player_movement(map_size * (Number(event.key == "s") - Number(event.key == "w")))
+            player_movement((Number(event.key == "d") - Number(event.key == "a")) + (map_size * (Number(event.key == "s") - Number(event.key == "w"))))
+            
+            const fireKeys = ["o", "i", "j", "p"]
+            if (fireKeys.includes(event.key)) {
+                bullet(((Number(event.key == "p") - Number(event.key == "i"))) + (map_size * (Number(event.key == "j") - Number(event.key == "o"))))
+            }
         });
+
+        //Player Bullet
+        let bullet_i
+        let bullet_direction
+        function bullet(_direction) {
+            bullet_i = player_i
+            bullet_direction = _direction
+            console.log(_direction)
+        }
         
         //Game Update
         let game_clock = setInterval(game_update, 20)        
         function game_update() {
+            //Move Player Bullet
+            bullet_i += bullet_direction
+            
             //Generate Scene
             let scene_text = ""
             for (let i = 1, x_i = 0; i <= map_iMax; i++) {
-                if (i == player_i) {scene_text += "@"} else if (map_borders.includes(i)) {continue} else if (map_monsters.includes(i) && map_diggeds.includes(i)) {game_text += "!"} else if (!map_diggeds.includes(i)) {scene_text += "#"} else {let v = 0; for (let i_y = -1; i_y < 2; i_y++) {for (let i_x = -1; i_x < 2; i_x++) {if (map_monsters.includes(i - i_x - i_y * map_size)) {v++}}}; (v > 0) ? scene_text += v : scene_text += "."}
+                if (i == player_i) {scene_text += "@"} else if (map_borders.includes(i)) {continue} else if (map_monsters.includes(i) && map_diggeds.includes(i)) {game_text += "!"} else if (!map_diggeds.includes(i)) {scene_text += "#"} else if (i == bullet_i) {scene_text += "%"} else {let v = 0; for (let i_y = -1; i_y < 2; i_y++) {for (let i_x = -1; i_x < 2; i_x++) {if (map_monsters.includes(i - i_x - i_y * map_size)) {v++}}}; (v > 0) ? scene_text += v : scene_text += "."}
                 x_i++
                 if (x_i == map_size - 2) {scene_text += "<br>"; x_i = 0}
             }

@@ -50,9 +50,13 @@
         let projectile_i
         let projectile_direction
         let projectile_range
-        function projectile(_position, _direction) {
+        let projectile_destroyWall
+        let projectile_damageObject
+        function projectile(_position, _direction, _destroyWall, _damageObject) {
             projectile_i = _position + _direction
             projectile_direction = _direction
+            projectile_destroyWall = _destroyWall
+            projectile_damageObject = _damageObject
         }
         
         //Game Update
@@ -61,14 +65,14 @@
             //Generate Scene
             let scene_text = ""
             for (let scene_i = 1, _xLength = 0; scene_i <= map_iMax; scene_i++) {
-                /*Player*/ if (scene_i == player_i) {scene_text += "@"} /*Border*/ else if (map_borders.includes(scene_i)) {continue} /*Monster*/ else if (map_monsters.includes(scene_i) && map_diggeds.includes(scene_i)) {game_text += "!"} /*Wall*/ else if (!map_diggeds.includes(scene_i)) {scene_text += "#"} /*Projectile*/ else if (scene_i == projectile_i) {scene_text += "%"} /*Pattern*/ else {let _pattern = 0; for (let y_i = -1; y_i < 2; y_i++) {for (let x_i = -1; x_i < 2; x_i++) {if (map_monsters.includes(scene_i - x_i - y_i * map_size)) {_pattern++}}}; (_pattern > 0) ? scene_text += _pattern : /*Empty*/ scene_text += "."}
+                /*Player*/ if (scene_i == player_i) {scene_text += "@"} /*Border*/ else if (map_borders.includes(scene_i)) {continue} /*Monster*/ else if (map_monsters.includes(scene_i) && map_diggeds.includes(scene_i)) {scene_text += "!"} /*Wall*/ else if (!map_diggeds.includes(scene_i)) {scene_text += "#"} /*Projectile*/ else if (scene_i == projectile_i) {scene_text += "%"} /*Pattern*/ else {let _pattern = 0; for (let y_i = -1; y_i < 2; y_i++) {for (let x_i = -1; x_i < 2; x_i++) {if (map_monsters.includes(scene_i - x_i - y_i * map_size)) {_pattern++}}}; (_pattern > 0) ? scene_text += _pattern : /*Empty*/ scene_text += "."}
                 _xLength++
                 if (_xLength == map_size - 2) {scene_text += "<br>"; _xLength = 0}
             }
             document.getElementById("Scene").innerHTML = scene_text
 
             //Move Player Bullet
-            if (!map_borders.includes(projectile_i) || (map_diggeds.includes(projectile_i))) {projectile_i += projectile_direction}
+            if (!map_borders.includes(projectile_i) && map_diggeds.includes(projectile_i)) {projectile_i += projectile_direction} else {if (!map_diggeds.includes(projectile_i)) {map_diggeds.push(projectile_i)}; projectile_direction = 0; projectile_i = 0}
         }
     </script>
 </html>

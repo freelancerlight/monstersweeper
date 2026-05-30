@@ -16,6 +16,7 @@
         const map_size = 15
         const map_iMax = Math.pow(map_size, 2);
         let player_i = Math.ceil(map_iMax / 2);
+        let x = 0
         
         //Generate Map Digged
         const map_diggeds = []
@@ -33,11 +34,29 @@
         for (let i = 0; i < 10;) {let monster_i = Math.ceil(Math.random() * map_iMax); if (!map_diggeds.includes(monster_i) && !map_monsters.includes(monster_i)) {map_monsters.push(monster_i); i++}}
         console.log("Map Monsters: " + map_monsters)
 
+        //Player Movement
+            function player_movement(_direction) {
+                if (!map_borders.includes(player_i + _direction)) {player_i += _direction}
+            }
+            window.addEventListener("keydown", function (event) {
+                //if (event.key == "d") {x += 1 / 100}
+                //if (event.key == "a") {x -= 1 / 100}
+                //x += 0.1 * (Number(event.key == "d") - Number(event.key == "a"))
+                x += 0.5 * (Number(event.key == "d") - Number(event.key == "a"))
+                console.log(x)
+                if (x > 1) {player_movement(Math.floor(x)); x = 0}
+                if (x < -1) {player_movement(Math.ceil(x)); x = 0}
+            });
+            /*addEventListener("keyup", function (event) {
+                if (event.key == "d" || event.key == "a") {x = 0}
+            });*/
+
         let game_clock = setInterval(game_update, 100)        
         function game_update() {
-            let scene_text = ""
-
+            
+            
             //Generate Scene
+            let scene_text = ""
             for (let i = 1, x_i = 0; i <= map_iMax; i++) {
                 if (i == player_i) {scene_text += "@"} else if (map_borders.includes(i)) {continue} else if (map_monsters.includes(i) && map_diggeds.includes(i)) {game_text += "!"} else if (!map_diggeds.includes(i)) {scene_text += "#"} else {let v = 0; for (let i_y = -1; i_y < 2; i_y++) {for (let i_x = -1; i_x < 2; i_x++) {if (map_monsters.includes(i - i_x - i_y * map_size)) {v++}}}; (v > 0) ? scene_text += v : scene_text += "."}
                 x_i++

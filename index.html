@@ -34,19 +34,24 @@
         console.log("Map Monsters: " + map_monsters)
 
         //Player Action
+        let player_tool = 1
         function player_movement(_direction) {
             if (!map_borders.includes(player_i + _direction) && map_diggeds.includes(player_i + _direction)) {player_i += _direction}
         }
         window.addEventListener("keydown", function (event) {
+            //Movement
             player_movement((Number(event.key == "d") - Number(event.key == "a")) + (map_size * (Number(event.key == "s") - Number(event.key == "w"))))
-            
+
+            //Fire
             const fireKeys = ["o", "[", "k", "p"]
-            if (fireKeys.includes(event.key)) {
-                projectile(player_i, ((Number(event.key == "[") - Number(event.key == "o"))) + (map_size * (Number(event.key == "k") - Number(event.key == "p"))))
-            }
+            if (fireKeys.includes(event.key)) {projectile(player_i, ((Number(event.key == "[") - Number(event.key == "o"))) + (map_size * (Number(event.key == "k") - Number(event.key == "p"))))}
+
+            //Change Tool
+            if (Number(event.key)) {player_tool = Number(event.key)}
+            console.log(player_tool)
         });
 
-        //Player Projectile
+        //Projectile
         let projectile_i
         let projectile_direction
         let projectile_range

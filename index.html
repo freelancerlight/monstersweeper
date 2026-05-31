@@ -35,7 +35,7 @@
 
         //Player Action
         function player_movement(_direction) {
-            if (!map_borders.includes(player_i + _direction)) {player_i += _direction}
+            if (!map_borders.includes(player_i + _direction) && map_diggeds.includes(player_i + _direction)) {player_i += _direction}
         }
         window.addEventListener("keydown", function (event) {
             player_movement((Number(event.key == "d") - Number(event.key == "a")) + (map_size * (Number(event.key == "s") - Number(event.key == "w"))))

@@ -30,8 +30,9 @@
 
         //Monster
         const _monsters = []
-        for (let i = 0; i < 10;) {let monster_i = Math.ceil(Math.random() * map_iMax); if (!map_borders.includes(monster_i) && !map_diggeds.includes(monster_i) && !_monsters.includes(monster_i)) {_monsters.push(monster_i); i++}}
-        console.log("Map Monsters: " + _monsters);
+        function monster(A) {this._position = A}
+        for (let i = 0; i < 10;) {let monster_i = Math.ceil(Math.random() * map_iMax); if (!map_borders.includes(monster_i) && !map_diggeds.includes(monster_i) && !_monsters.includes(monster_i)) {_monsters.push(new monster(monster_i)); i++}}
+        console.log(_monsters);
 
         //Projectile
         const _projectiles = []
@@ -58,7 +59,7 @@
             //Generate Scene
             let scene_text = ""
             for (let scene_i = 1, _xLength = 0; scene_i <= map_iMax; scene_i++) {
-                /*Player*/ if (scene_i == player_i) {scene_text += "@"} /*Border*/ else if (map_borders.includes(scene_i)) {continue} /*Monster*/ else if (_monsters.includes(scene_i) && map_diggeds.includes(scene_i)) {scene_text += "!"} /*Wall*/ else if (!map_diggeds.includes(scene_i)) {scene_text += "#"} /*Projectile*/ else if (_projectiles.some(projectile => projectile._position === scene_i)) {scene_text += "%"} /*Pattern*/ else {let _pattern = 0; for (let y_i = -1; y_i < 2; y_i++) {for (let x_i = -1; x_i < 2; x_i++) {if (_monsters.includes(scene_i - x_i - y_i * map_size)) {_pattern++}}}; (_pattern > 0) ? scene_text += _pattern : /*Empty*/ scene_text += "."}
+                /*Player*/ if (scene_i == player_i) {scene_text += "@"} /*Border*/ else if (map_borders.includes(scene_i)) {continue} /*Wall*/ else if (!map_diggeds.includes(scene_i)) {scene_text += "#"} /*Monster*/ else if (_monsters.some(monster => monster._position === scene_i)) {scene_text += "!"} else if (_projectiles.some(projectile => projectile._position === scene_i)) {scene_text += "%"} /*Pattern*/ else {let _pattern = 0; for (let y_i = -1; y_i < 2; y_i++) {for (let x_i = -1; x_i < 2; x_i++) {if (_monsters.some(monster => monster._position === scene_i - x_i - y_i * map_size)) {_pattern++}}}; (_pattern > 0) ? scene_text += _pattern : /*Empty*/ scene_text += "."}
                 _xLength++
                 if (_xLength == map_size - 2) {scene_text += "<br>"; _xLength = 0}
             }

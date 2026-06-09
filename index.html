@@ -56,8 +56,8 @@
             document.getElementById("Scene").innerHTML = scene_text
 
             //Monster Code
-            function monster_detectionX(_direction, _variable) {for (let i_x = monster._mapI; !map_border.includes(i_x) && map_digged.includes(i_x); i_x += _direction) {if (i_x == _variable) {enemy_index += _direction; enemy_moved = true}}}
-            _monsters.forEach(monster => {};)
+            function monster_detection(_variable, _direction) {for (let i = _variable; !map_border.includes(i) && map_digged.includes(i); i += _direction) {if (i == player_index) {enemy_index += _direction; enemy_moved = true}}}
+            _monsters.forEach(monster => {let i_x = monster._mapI, i_y = i_x; console.log(i_x, i_y)});
             
             /*function monster_xCheck(_direction) {function monster_yCheck() {for (let i_y = i_x; _monsters.some(monster => monster._mapI) && map_digged.includes(i); i += _direction) {if (i == player_index) {enemy_index += _direction; enemy_moved = true}};}for (let i = enemy_index; !map_border.includes(i) && map_digged.includes(i) && !enemy_moved; i += _direction) {if (i == player_index) {enemy_index += _direction; enemy_moved = true}; enemy_yCheck(i, map_size * 1); enemy_yCheck(i, map_size * -1)}}*/
 

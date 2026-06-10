@@ -30,7 +30,7 @@
 
         //Monster Setup
         const _monsters = []
-        function monster(A) {this._mapI = A}
+        function monster(A) {this._mapI = A, this._freed = false}
         for (let i = 0; i < 10;) {/*Generate Monster*/ let monster_i = Math.ceil(Math.random() * map_iMax); /*Check Before Add*/ if (!map_borders.includes(monster_i) && !map_diggeds.includes(monster_i) && (monster => monster._mapI !== monster_i)) {_monsters.push(new monster(monster_i)); /*Next Monster*/ i++}};
         console.log(_monsters);
 
@@ -58,7 +58,8 @@
             //Monster Code
             let monster_detected = false
             let test = 0
-            function monster_detectionX(_variable, _direction) {for (let i = _variable; !map_borders.includes(i) && map_diggeds.includes(i) && !monster_detected; i += _direction) {if (i == player_i) {test += _direction; monster_detected = true}; monster_detectionY(i, map_size * 1); monster_detectionY(i, map_size * -1)}};
+            function monster_detection(_variable, _direction, _execute) {for (let i = _variable; !map_borders.includes(i) && map_diggeds.includes(i); i += _direction) {if (i == player_i) {_execute}}}
+            function monster_detectionX(_variable, _direction) {/*for (let i = _variable; !map_borders.includes(i) && map_diggeds.includes(i) && !monster_detected; i += _direction) {if (i == player_i) {test += _direction; monster_detected = true}*/ ; monster_detectionY(i, map_size * 1); monster_detectionY(i, map_size * -1)}};
             function monster_detectionY(_variable, _direction) {for (let i = _variable; !map_borders.includes(i) && map_diggeds.includes(i); i += _direction) {if (i == player_i) {test += _direction; monster_detected = true}}};
             _monsters.forEach(monster => {monster_detected = false; monster_detectionX(monster._mapI, 1); monster_detectionX(monster._mapI, -1); monster._mapI += test});
 

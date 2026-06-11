@@ -41,27 +41,18 @@
         //Player Action
         let player_tool = 1
         function player_movement(_direction) {if (!map_borders.includes(player_i + _direction) && map_diggeds.includes(player_i + _direction)) {player_i += _direction}}
-        window.addEventListener("keydown", function (event) {/*Movement*/ player_movement((Number(event.key == "d") - Number(event.key == "a")) + (map_size * (Number(event.key == "s") - Number(event.key == "w")))); /*Fire*/ const fireKeys = ["o", "[", "k", "p"]; if (fireKeys.includes(event.key)) {_projectiles.push(new projectile(/*_position*/ player_i, /*_direction*/ ((Number(event.key == "[") - Number(event.key == "o"))) + (map_size * (Number(event.key == "k") - Number(event.key == "p"))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))}
-
-            //Change Tool
-            if (Number(event.key)) {player_tool = Number(event.key)}});
+        window.addEventListener("keydown", function (event) {/*Movement*/ player_movement((Number(event.key == "d") - Number(event.key == "a")) + (map_size * (Number(event.key == "s") - Number(event.key == "w")))); /*Fire*/ const fireKeys = ["o", "[", "k", "p"]; if (fireKeys.includes(event.key)) {_projectiles.push(new projectile(/*_position*/ player_i, /*_direction*/ ((Number(event.key == "[") - Number(event.key == "o"))) + (map_size * (Number(event.key == "k") - Number(event.key == "p"))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))}; /*Change Tool*/ if (Number(event.key)) {player_tool = Number(event.key); console.log(player_tool)}});
 
         //Game Update
         let game_clock = setInterval(game_update, 20)        
         function game_update() {
             //Generate Scene
             let scene_text = ""
-            for (let scene_i = 1, _xLength = 0; scene_i <= map_iMax; scene_i++) {
-                /*Player*/ if (scene_i == player_i) {scene_text += "@"} /*Border*/ else if (map_borders.includes(scene_i)) {continue} /*Wall*/ else if (!map_diggeds.includes(scene_i)) {scene_text += "#"} /*Monster*/ else if (_monsters.some(monster => monster._mapI === scene_i)) {scene_text += "!"} /*Projectile*/ else if (_projectiles.some(projectile => projectile._position === scene_i)) {scene_text += "%"} /*Pattern*/ else {let _pattern = 0; for (let y_i = -1; y_i < 2; y_i++) {for (let x_i = -1; x_i < 2; x_i++) {if (_monsters.some(monster => monster._mapI === scene_i - x_i - y_i * map_size)) {_pattern++}}}; (_pattern > 0) ? scene_text += _pattern : /*Empty*/ scene_text += "."}; /*Next Loop*/ _xLength++; /*Add Line Break*/ if (_xLength == map_size - 2) {scene_text += "<br>"; _xLength = 0}}
+            for (let scene_i = 1, _xLength = 0; scene_i <= map_iMax; scene_i++) {/*Player*/ if (scene_i == player_i) {scene_text += "@"} /*Border*/ else if (map_borders.includes(scene_i)) {continue} /*Wall*/ else if (!map_diggeds.includes(scene_i)) {scene_text += "#"} /*Monster*/ else if (_monsters.some(monster => monster._mapI === scene_i)) {scene_text += "!"; monster._freed = true} /*Projectile*/ else if (_projectiles.some(projectile => projectile._position === scene_i)) {scene_text += "%"} /*Pattern*/ else {let _pattern = 0; for (let y_i = -1; y_i < 2; y_i++) {for (let x_i = -1; x_i < 2; x_i++) {if (_monsters.some(monster => monster._mapI === scene_i - x_i - y_i * map_size) && !monster._freed) {_pattern++}}}; (_pattern > 0) ? scene_text += _pattern : /*Empty*/ scene_text += "."}; /*Next Loop*/ _xLength++; /*Add Line Break*/ if (_xLength == map_size - 2) {scene_text += "<br>"; _xLength = 0}}
             document.getElementById("Scene").innerHTML = scene_text;
 
             //Monster Code
-            let monster_detected = false
-            let test = 0
-            function monster_detection(_variable, _direction, _detectedExecute, _continueExecute) {for (let i = _variable; !map_borders.includes(i) && map_diggeds.includes(i); i += _direction) {if (i == player_i) {_execute}; _continueExecute}}
-            function monster_detectionX(_variable, _direction) {/*for (let i = _variable; !map_borders.includes(i) && map_diggeds.includes(i) && !monster_detected; i += _direction) {if (i == player_i) {test += _direction; monster_detected = true}*/ monster_detection(_variable, _direction, (test += _direction, monster_detected = true), (monster_detectionY(_variable, map_size * 1), monster_detectionY(_variable, map_size * -1)))};
-            function monster_detectionY(_variable, _direction) {for (let i = _variable; !map_borders.includes(i) && map_diggeds.includes(i); i += _direction) {if (i == player_i) {test += _direction; monster_detected = true}}};
-            _monsters.forEach(monster => {monster_detected = false; monster_detectionX(monster._mapI, 1); monster_detectionX(monster._mapI, -1); monster._mapI += test});
+            _monsters.forEach(monster => {if (!monster._freed && !map_borders.includes(monster._mapI + 1) && map_diggeds.includes(monster._mapI + 1)) {monster._mapI += 1; console.log(monster._freed)}})
 
             //Projectile Code
             _projectiles.forEach(projectile => {/*Move Projectile*/ if (!map_borders.includes(projectile._position) && map_diggeds.includes(projectile._position) && projectile._range && projectile._rangeI < projectile._range) {projectile._position += projectile._direction; projectile._rangeI += 1} else {/*Destroy Wall*/ if (!map_diggeds.includes(projectile._position) && projectile._destroyWall) {map_diggeds.push(projectile._position)}; /*Delete Projectile*/ _projectiles.splice(_projectiles.indexOf(this), 1)}});

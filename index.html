@@ -41,7 +41,7 @@
         //Player Action
         let player_tool = 1
         function player_movement(_direction) {if (!map_borders.includes(player_i + _direction) && map_diggeds.includes(player_i + _direction)) {player_i += _direction}}
-        window.addEventListener("keydown", function (event) {/*Movement*/ player_movement((Number(event.key == "d") - Number(event.key == "a")) + (map_size * (Number(event.key == "s") - Number(event.key == "w")))); /*Fire*/ const fireKeys = ["o", "[", "k", "p"]; if (fireKeys.includes(event.key)) {_projectiles.push(new projectile(/*_position*/ player_i, /*_direction*/ ((Number(event.key == "[") - Number(event.key == "o"))) + (map_size * (Number(event.key == "k") - Number(event.key == "p"))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))}; /*Change Tool*/ if (Number(event.key)) {player_tool = Number(event.key); console.log(player_tool)}});
+        window.addEventListener("keydown", function (event) {/*Movement*/ player_movement((Number(event.key == "d") - Number(event.key == "a")) + (map_size * (Number(event.key == "s") - Number(event.key == "w")))); /*Fire*/ const fireKeys = ["o", "[", "k", "p"]; if (fireKeys.includes(event.key)) {_projectiles.push(new projectile(/*_position*/ player_i, /*_direction*/ ((Number(event.key == "[") - Number(event.key == "o"))) + (map_size * (Number(event.key == "k") - Number(event.key == "p"))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))}; /*Change Tool*/ if (Number(event.key)) {player_tool = Number(event.key); console.log(player_tool)}}); console.log(_monsters);
 
         //Game Update
         let game_clock = setInterval(game_update, 20)        
@@ -52,7 +52,7 @@
             document.getElementById("Scene").innerHTML = scene_text;
 
             //Monster Code
-            _monsters.forEach(monster => {if (!monster._freed && !map_borders.includes(monster._mapI + 1) && map_diggeds.includes(monster._mapI + 1)) {monster._mapI += 1; console.log(monster._freed)}})
+            _monsters.forEach(monster => {if (!monster._freed && map_diggeds.includes(monster._mapI)) {monster._freed = true; console.log(monster._freed)}; if (monster._freed && !map_borders.includes(monster._mapI + 1) && map_diggeds.includes(monster._mapI + 1)) {monster._mapI += 1}})
 
             //Projectile Code
             _projectiles.forEach(projectile => {/*Move Projectile*/ if (!map_borders.includes(projectile._position) && map_diggeds.includes(projectile._position) && projectile._range && projectile._rangeI < projectile._range) {projectile._position += projectile._direction; projectile._rangeI += 1} else {/*Destroy Wall*/ if (!map_diggeds.includes(projectile._position) && projectile._destroyWall) {map_diggeds.push(projectile._position)}; /*Delete Projectile*/ _projectiles.splice(_projectiles.indexOf(this), 1)}});

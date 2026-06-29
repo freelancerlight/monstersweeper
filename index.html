@@ -58,7 +58,7 @@
             document.getElementById("Scene").innerHTML = scene_text;
 
             //Player Code
-            for (let i = 0; i < ores.length; i++) {if (ores[i] == player_mapI) {ore_diggeds.push(ores[i]); ores.splice(i, 1)}}
+            for (let i = 0; i < ores.length; i++) {if (ores[i] == player_mapI) {ore_diggeds.push(ores[i]); ores.splice(i, 1)}};
 
             //Monster Code
             //monsters.forEach(monster => {if (!monster.freed) {monster.freed = true}; /*Detection*/ if (!map_diggeds.includes(monster.mapI)) {for (let direction_i = 0; direction_i < 4; direction_i++) {for (let i = monster.mapI; !map_diggeds.includes(i) && !map_borders.includes(i); i += directions[direction_i]) {console.log(monster.mapI); /*console.log(map_diggeds.includes(i))*/}}} /*&& !map_borders.includes(monster.mapI + 1) && map_diggeds.includes(monster.mapI + monster.direction)) {monster.mapI += monster.direction}*/});

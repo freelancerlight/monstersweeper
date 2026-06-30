@@ -12,59 +12,59 @@
         <p id="Scene">Loading... (or broken if the second have passed)</p>
     </body>
     <script>
-        const map_size = 15, map_iMax = Math.pow(map_size, 2), directions = [-map_size, 1, map_size, -1];
-        let player_mapI = Math.ceil(map_iMax / 2);
-
-        //Generate Map Border
-        const map_borders = [];
-        for (let i = 1; i <= map_size; i++) {map_borders.push(i); map_borders.push(map_iMax - i + 1)};
-        for (let i = 1; i <= map_size - 2; i++) {map_borders.push(1 + map_size * i); map_borders.push(map_size * (1 + i))};
-        console.log("Map Borders: " + map_borders);
-        
-        //Generate Map Digged
-        const map_diggeds = [];
-        for (let i_y = -1; i_y < 2; i_y++) {for (let i_x = -1; i_x < 2; i_x++) {map_diggeds.push(player_mapI - i_y * map_size - i_x)}}
-        console.log("Map Diggeds: " + map_diggeds);
-
-        //Monster Setup
-        const monsters = [];
-        function monster(A) {this.mapI = A, this.direction = 0,this.freed = false}
-        for (let i = 0; i < 10;) {/*Generate Monster*/ let v = Math.ceil(Math.random() * map_iMax); /*Check*/ if (!map_borders.includes(v) && !map_diggeds.includes(v) && (monster => monster.mapI !== monster_i)) {monsters.push(new monster(v)); i++}};
-        console.log(monsters);
-
-        //Ore Setup
-        const ores = [], ore_diggeds = [];
-        for (let i = 0; i < 10;) {/*Generate Ore*/ let v = Math.ceil(Math.random() * map_iMax); /*Check*/ if (!map_borders.includes(v) && !map_diggeds.includes(v) && (monster => monster.mapI !== v) && JSON.stringify(ores) !== v) {ores.push(v); i++}};
-        console.log(ores);
-
-        //Projectile Setup
-        const projectiles = []
-        function projectile(A, B, C, D, E) {this._position = A; this._direction = B; this._range = C; this._destroyWall = D; this._damage = E; this._rangeI = 0};
+        //Variable Setup
+        let Game = {}
+        let game_state = 0
 
         //Functions
         function game_stop() {clearInterval(game_clock); document.getElementById("Scene").innerHTML = "The Game Have Stopped."}
+        function monster(A) {this.mapI = A, this.direction = 0,this.freed = false}
+        function projectile(A, B, C, D, E) {this._position = A; this._direction = B; this._range = C; this._destroyWall = D; this._damage = E; this._rangeI = 0};
+        
+        function game(_mapXSize, _mapYSize, _playerMapI, _mapDiggeds, _mapMonsters, _mapOres) {
+            Game = {map_xSize:_mapXSize, map_ySize:_mapYSize, map_iL:_mapXSize * _mapYSize, player_mapI:_playerMapI, map_borders:[], map_diggeds:[_mapDiggeds], monsters:[_mapMonsters], ores:[_mapOres], ore_diggeds:[], projectiles:[]};
+
+            //Generate Map Borders
+            for (let i = 1; i <= Game.map_xSize; i++) {Game.map_borders = i; Game.map_borders = Game.map_iL - i + 1};
+            for (let i = 1; i <= Game.map_ySize - 2; i++) {Game.map_borders = 1 + Game.map_xSize * i; Game.map_borders = Game.map_xSize * (1 + i)};
+            console.log(Game); game_state = 1;
+        };
+        game(15, 15, Math.ceil((15 * 15) / 2))
+            
+            //for (let i_y = -1; i_y < 2; i_y++) {for (let i_x = -1; i_x < 2; i_x++) {map_diggeds.push(player_mapI - i_y * map_size - i_x)}}
+
+            //Generate Monster
+            //for (let i = 0; i < 10;) {/*Generate Monster*/ let v = Math.ceil(Math.random() * map_iMax); /*Check*/ if (!map_borders.includes(v) && !map_diggeds.includes(v) && (monster => monster.mapI !== monster_i)) {monsters.push(new monster(v)); i++}};
+
+            //Generate Ore
+            //for (let i = 0; i < 10;) {/*Generate Ore*/ let v = Math.ceil(Math.random() * map_iMax); /*Check*/ if (!map_borders.includes(v) && !map_diggeds.includes(v) && (monster => monster.mapI !== v) && JSON.stringify(ores) !== v) {ores.push(v); i++}};   
 
         //Player Action
         let player_tool = 1;
-        function player_movement(_direction) {if (!map_borders.includes(player_mapI + _direction) && map_diggeds.includes(player_mapI + _direction)) {player_mapI += _direction}}
-        window.addEventListener("keydown", function (event) {/*Stop Game*/ if (event.key == "`") {game_stop()}; /*Movement*/ player_movement((Number(event.key == "d") - Number(event.key == "a")) + (map_size * (Number(event.key == "s") - Number(event.key == "w")))); /*Fire*/ const fireKeys = ["o", "[", "k", "p"]; if (fireKeys.includes(event.key)) {projectiles.push(new projectile(/*_position*/ player_mapI, /*_direction*/ ((Number(event.key == "[") - Number(event.key == "o"))) + (map_size * (Number(event.key == "k") - Number(event.key == "p"))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))}; /*Change Tool*/ if (Number(event.key)) {player_tool = Number(event.key); console.log(player_tool)}});
+        function player_movement(_direction) {if (!Game.map_borders.includes(Game.player_mapI + _direction) && Game.map_diggeds.includes(Game.player_mapI + _direction)) {Game.player_mapI += _direction}}
+        window.addEventListener("keydown", function (event) {
+            if (game_state == 1) {
+                /*Stop Game*/ if (event.key == "`") {game_state == 0}; /*Movement*/ player_movement((Number(event.key == "d") - Number(event.key == "a")) + (Game.map_xSize * (Number(event.key == "s") - Number(event.key == "w")))); /*Fire*/ const fireKeys = ["o", "[", "k", "p"]; if (fireKeys.includes(event.key)) {projectiles.push(new projectile(/*_position*/ Game.player_mapI, /*_direction*/ ((Number(event.key == "[") - Number(event.key == "o"))) + (Game.map_xSize * (Number(event.key == "k") - Number(event.key == "p"))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))}; /*Change Tool*/ if (Number(event.key)) {player_tool = Number(event.key); console.log(player_tool)}}
+            });
 
         //Game Update
-        let game_clock = setInterval(game_update, 20);        
+        //let game_clock = setInterval(game_update, 20);        
         function game_update() {
-            //Generate Scene
-            let scene_text = "";
-            for (let scene_i = 1, i_x = 0; scene_i <= map_iMax; scene_i++) {/*Player*/ if (scene_i == player_mapI) {scene_text += "@"} /*Border*/ else if (map_borders.includes(scene_i)) {continue} /*Projectile*/ else if (projectiles.some(projectile => projectile._position === scene_i)) {scene_text += "%"} /*Ore*/ else if (ores.includes(scene_i)) {scene_text += "$"} /*Ore Digged*/ else if (ore_diggeds.includes(scene_i)) {scene_text += "*"} /*Wall*/ else if (!map_diggeds.includes(scene_i)) {scene_text += "#"} /*Monster*/ else if (monsters.some(monster => monster.mapI === scene_i)) {scene_text += "!"} /*Pattern*/ else {let _pattern = 0; for (let y_i = -1; y_i < 2; y_i++) {for (let x_i = -1; x_i < 2; x_i++) {if (monsters.some(monster => monster.mapI === scene_i - x_i - y_i * map_size)) {_pattern++}}}; (_pattern > 0) ? scene_text += _pattern : /*Empty*/ scene_text += "."}; /*Next Loop*/ i_x++; /*Add Line Break*/ if (i_x == map_size - 2) {scene_text += "<br>"; i_x = 0}};
-            document.getElementById("Scene").innerHTML = scene_text;
-
-            //Player Code
-            for (let i = 0; i < ores.length; i++) {if (ores[i] == player_mapI) {ore_diggeds.push(ores[i]); ores.splice(i, 1)}};
-
-            //Monster Code
-            //monsters.forEach(monster => {if (!monster.freed) {monster.freed = true}; /*Detection*/ if (!map_diggeds.includes(monster.mapI)) {for (let direction_i = 0; direction_i < 4; direction_i++) {for (let i = monster.mapI; !map_diggeds.includes(i) && !map_borders.includes(i); i += directions[direction_i]) {console.log(monster.mapI); /*console.log(map_diggeds.includes(i))*/}}} /*&& !map_borders.includes(monster.mapI + 1) && map_diggeds.includes(monster.mapI + monster.direction)) {monster.mapI += monster.direction}*/});
-
-            //Projectile Code
-            projectiles.forEach(projectile => {/*Move Projectile*/ if (!map_borders.includes(projectile._position) && map_diggeds.includes(projectile._position) && projectile._range && projectile._rangeI < projectile._range) {projectile._position += projectile._direction; projectile._rangeI += 1} else {/*Destroy Wall*/ if (!map_diggeds.includes(projectile._position) && projectile._destroyWall) {map_diggeds.push(projectile._position)}; /*Delete Projectile*/ projectiles.splice(projectiles.indexOf(this), 1)}});
+            if (game_state == 1) {
+                //Generate Scene
+                let scene_text = "";
+                for (let scene_i = 1, i_x = 0; scene_i <= map_iMax; scene_i++) {/*Player*/ if (scene_i == player_mapI) {scene_text += "@"} /*Border*/ else if (map_borders.includes(scene_i)) {continue} /*Projectile*/ else if (projectiles.some(projectile => projectile._position === scene_i)) {scene_text += "%"} /*Ore*/ else if (ores.includes(scene_i)) {scene_text += "$"} /*Ore Digged*/ else if (ore_diggeds.includes(scene_i)) {scene_text += "*"} /*Wall*/ else if (!map_diggeds.includes(scene_i)) {scene_text += "#"} /*Monster*/ else if (monsters.some(monster => monster.mapI === scene_i)) {scene_text += "!"} /*Pattern*/ else {let _pattern = 0; for (let y_i = -1; y_i < 2; y_i++) {for (let x_i = -1; x_i < 2; x_i++) {if (monsters.some(monster => monster.mapI === scene_i - x_i - y_i * map_size)) {_pattern++}}}; (_pattern > 0) ? scene_text += _pattern : /*Empty*/ scene_text += "."}; /*Next Loop*/ i_x++; /*Add Line Break*/ if (i_x == map_size - 2) {scene_text += "<br>"; i_x = 0}};
+                document.getElementById("Scene").innerHTML = scene_text;
+    
+                //Player Code
+                for (let i = 0; i < ores.length; i++) {if (ores[i] == player_mapI) {ore_diggeds.push(ores[i]); ores.splice(i, 1)}};
+    
+                //Monster Code
+                //monsters.forEach(monster => {if (!monster.freed) {monster.freed = true}; /*Detection*/ if (!map_diggeds.includes(monster.mapI)) {for (let direction_i = 0; direction_i < 4; direction_i++) {for (let i = monster.mapI; !map_diggeds.includes(i) && !map_borders.includes(i); i += directions[direction_i]) {console.log(monster.mapI); /*console.log(map_diggeds.includes(i))*/}}} /*&& !map_borders.includes(monster.mapI + 1) && map_diggeds.includes(monster.mapI + monster.direction)) {monster.mapI += monster.direction}*/});
+    
+                //Projectile Code
+                projectiles.forEach(projectile => {/*Move Projectile*/ if (!map_borders.includes(projectile._position) && map_diggeds.includes(projectile._position) && projectile._range && projectile._rangeI < projectile._range) {projectile._position += projectile._direction; projectile._rangeI += 1} else {/*Destroy Wall*/ if (!map_diggeds.includes(projectile._position) && projectile._destroyWall) {map_diggeds.push(projectile._position)}; /*Delete Projectile*/ projectiles.splice(projectiles.indexOf(this), 1)}});
+            } else {clearInterval(game_clock); document.getElementById("Scene").innerHTML = "The Game Have Stopped."; return};   
         };
     </script>
 </html>

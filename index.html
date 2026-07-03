@@ -10,10 +10,11 @@
     </head>
     <body>
         <p id="Scene">Loading... (or broken if the second have passed)</p>
+        <p id="HUD"></p>
     </body>
     <script>
         //Variable Setup
-        let Game = {}, game_state = 0, dev = 0, game_clock = 0;
+        let Game = {}, game_state = 0, dev = 0, game_clock = 0, menu_select = 0;
 
         //Functions 
         function Monster(A) {this.mapI = A, this.direction = 0,this.freed = false}
@@ -43,14 +44,16 @@
             if (Array.isArray(_mapOres)) {Game.ores = [_mapOres]} else {array = []; for (let i = 0; i < _mapOres;) {/*Generate Ore*/ let v = Math.ceil(Math.random() * Game.map_iL); /*Check*/ if (!Game.map_borders.includes(v) && !Game.map_diggeds.includes(v) && !Game.monsters.includes(v) && !array.includes(v)) {array.push(v); i++}}};
             Game.ores = array
             
-            console.log(Game); game_state = 1; game_clock = setInterval(game_update, 20);
+            console.log(Game);
+            gameResume()
         };
-        game(15, 15, 0, 1, 5, 5);
+        function gameResume() {game_state = 1; game_clock = setInterval(game_update, 20); document.getElementById("HUD").innerHTML = "";}
+        game(15, 15, 0, 1, 10, 10);
 
         //Player Action
         let player_tool = 1;
         function player_movement(_direction) {if (!Game.map_borders.includes(Game.player_mapI + _direction) && Game.map_diggeds.includes(Game.player_mapI + _direction)) {Game.player_mapI += _direction}}
-        window.addEventListener("keydown", function (event) {/*Toggle Dev*/ if (event.key == "=") {if (dev) {dev = 0} else {dev = 1}}; /*Start Game*/ if (event.key == "-") {game(15, 15, 0, 1, 5, 5)} /*Stop Game*/ if (event.key == "`") {game_state = 0};; if (game_state) {/*Movement*/ player_movement((Number(event.key == "d") - Number(event.key == "a")) + (Game.map_xSize * (Number(event.key == "s") - Number(event.key == "w")))); /*Fire*/ const fireKeys = ["o", "[", "k", "p"]; if (fireKeys.includes(event.key)) {Game.projectiles.push(new Projectile(/*_position*/ Game.player_mapI, /*_direction*/ ((Number(event.key == "[") - Number(event.key == "o"))) + (Game.map_xSize * (Number(event.key == "k") - Number(event.key == "p"))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))}; /*Change Tool*/ if (Number(event.key)) {player_tool = Number(event.key); console.log(player_tool)}}});
+        window.addEventListener("keydown", function (event) {/*Toggle Dev*/ if (event.key == "=") {if (dev) {dev = 0} else {dev = 1}}; /*Pause Game*/ if (event.key == "`") {game_state = 0}; if (game_state) {/*Movement*/ player_movement((Number(event.key == "d") - Number(event.key == "a")) + (Game.map_xSize * (Number(event.key == "s") - Number(event.key == "w")))); /*Fire*/ const fireKeys = ["o", "[", "k", "p"]; if (fireKeys.includes(event.key)) {Game.projectiles.push(new Projectile(/*_position*/ Game.player_mapI, /*_direction*/ ((Number(event.key == "[") - Number(event.key == "o"))) + (Game.map_xSize * (Number(event.key == "k") - Number(event.key == "p"))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))}; /*Change Tool*/ if (Number(event.key)) {player_tool = Number(event.key); console.log(player_tool)}} else {/*Resume Game*/ if (event.key == "1") {gameResume()}; /*Start Game*/ if (event.key == "2") {game(15, 15, 0, 1, 5, 5)}}});
 
         //Game Update        
         function game_update() {
@@ -68,7 +71,7 @@
     
                 //Projectile Code
                 Game.projectiles.forEach(Projectile => {/*Move Projectile*/ if (!Game.map_borders.includes(Projectile.position) && Game.map_diggeds.includes(Projectile.position) && Projectile.range && Projectile.rangeI < Projectile.range) {Projectile.position += Projectile.direction; Projectile.rangeI += 1} else {/*Destroy Wall*/ if (!Game.map_diggeds.includes(Projectile.position) && Projectile.destroyWall) {Game.map_diggeds.push(Projectile.position)}; /*Delete Projectile*/ Game.projectiles.splice(Game.projectiles.indexOf(this), 1)}});
-            } else {clearInterval(game_clock); document.getElementById("Scene").innerHTML = "The Game Have Stopped."; return};   
+            } else {clearInterval(game_clock); document.getElementById("HUD").innerHTML = "[1] Resume Game, [2] Start New Game"; return};   
         };
     </script>
 </html>

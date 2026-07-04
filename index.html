@@ -14,7 +14,7 @@
     </body>
     <script>
         //Variable Setup
-        let Game = {}, game_state = 0, dev = 0, game_clock = 0, menu_page = 0;
+        let dev = 0, Game = {}, game_state = 0, game_clock = 0, game_menu = 0;
 
         //Functions 
         function Monster(A) {this.mapI = A, this.direction = 0,this.freed = false}
@@ -50,7 +50,7 @@
         
         function gameResume() {if (Game.state) {game_state = 1; game_clock = setInterval(game_update, 20); document.getElementById("HUD").innerHTML = ""}};
 
-        function menu(_page) {menu_page = _page; if (menu_page == 0) {document.getElementById("HUD").innerHTML = "[1] Resume Game, [2] Start New Game"}};
+        function menu(_page) {game_menu = _page; let _text; if (game_menu == 0) {_text = "[1] Resume Game<br>[2] Start New Game"} else {_text = "[1] Chapter 1<br>[2] Chapter 2<br>[3] Chapter 3<br>[4] Custom Game"}; if (game_menu > 0) {_text += "<br><br>[0] Main Menu"} document.getElementById("HUD").innerHTML = _text};
         
         game(15, 15, 0, 1, 10, 10);
 
@@ -60,7 +60,7 @@
         window.addEventListener("keydown", function (event) {
             /*Toggle Dev*/ if (event.key == "=") {if (dev) {dev = 0} else {dev = 1}}; /*Pause Game*/ if (event.key == "`") {game_state = 0};
             if (game_state) {/*Movement*/ player_movement((Number(event.key == "d") - Number(event.key == "a")) + (Game.map_xSize * (Number(event.key == "s") - Number(event.key == "w")))); /*Fire*/ const fireKeys = ["o", "[", "k", "p"]; if (fireKeys.includes(event.key)) {Game.projectiles.push(new Projectile(/*_position*/ Game.player_mapI, /*_direction*/ ((Number(event.key == "[") - Number(event.key == "o"))) + (Game.map_xSize * (Number(event.key == "k") - Number(event.key == "p"))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))}; /*Change Tool*/ if (Number(event.key)) {player_tool = Number(event.key); console.log(player_tool)}
-            } else {if (menu_page == 0) {/*Resume Game*/ if (event.key == "1" && Game.state) {gameResume()}} else {}; /*Start Game*/ if (event.key == "2") {game(15, 15, 0, 1, 5, 5)}}});
+            } else /*Rework this one please*/ {if (event.key == "1") {if (game_menu == 0) {/*Resume Game*/ if (Game.state) {gameResume()}} else {/*Start Game*/ game(15, 15, 0, 1, 10, 10)}}; if (event.key == "2") {menu(1)}; if (event.key == "0" && game_menu > 0) {menu(game_menu - 1)}}});
 
         //Game Update        
         function game_update() {

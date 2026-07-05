@@ -82,13 +82,13 @@
                 document.getElementById("Scene").innerHTML = scene_text;
     
                 //Player Code
-                for (let i = 0; i < Game.ores.length; i++) {if (Game.ores[i] == Game.player_mapI) {Game.ore_diggeds.push(Game.ores[i]); Game.ores.splice(i, 1)}};
+                //for (let i = 0; i < Game.ores.length; i++) {if (Game.ores[i] == Game.player_mapI) {Game.ore_diggeds.push(Game.ores[i]); Game.ores.splice(i, 1)}};
     
                 //Monster Code
                 //monsters.forEach(monster => {if (!monster.freed) {monster.freed = true}; /*Detection*/ if (!map_diggeds.includes(monster.mapI)) {for (let direction_i = 0; direction_i < 4; direction_i++) {for (let i = monster.mapI; !map_diggeds.includes(i) && !map_borders.includes(i); i += directions[direction_i]) {console.log(monster.mapI); /*console.log(map_diggeds.includes(i))*/}}} /*&& !map_borders.includes(monster.mapI + 1) && map_diggeds.includes(monster.mapI + monster.direction)) {monster.mapI += monster.direction}*/});
     
                 //Projectile Code
-                Game.projectiles.forEach(Projectile => {/*Move Projectile*/ if (!Game.map_borders.includes(Projectile.position) && Game.map_diggeds.includes(Projectile.position) && Projectile.range && Projectile.rangeI < Projectile.range) {Projectile.position += Projectile.direction; Projectile.rangeI += 1} else {/*Destroy Wall*/ if (!Game.map_diggeds.includes(Projectile.position) && Projectile.destroyWall) {Game.map_diggeds.push(Projectile.position)}; /*Delete Projectile*/ Game.projectiles.splice(Game.projectiles.indexOf(this), 1)}});
+                Game.projectiles.forEach(Projectile => {/*Move Projectile*/ if (!Game.map_borders.includes(Projectile.position) && Game.map_diggeds.includes(Projectile.position) && Projectile.range && Projectile.rangeI < Projectile.range) {Projectile.position += Projectile.direction; Projectile.rangeI += 1} else {/*Dig Soft Block*/ if (!Game.map_diggeds.includes(Projectile.position) && Projectile.destroyWall) {Game.map_diggeds.push(Projectile.position)}; /*Dig Ore*/ if (Game.ores.includes(Projectile.position) && Projectile.destroyWall) {Game.ore_diggeds.push(Projectile.position); Game.ores.splice(Game.ores.indexOf(Projectile.position), 1)} /*Delete Projectile*/ Game.projectiles.splice(Game.projectiles.indexOf(this), 1)}});
             } else {clearInterval(game_clock); menu(0); return};   
         };
     </script>

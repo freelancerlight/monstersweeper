@@ -50,9 +50,13 @@
         
         function gameResume() {if (Game.state) {game_state = 1; game_clock = setInterval(game_update, 20); document.getElementById("HUD").innerHTML = ""}};
 
-        function menu(_page) {game_menu = _page; let _text; if (game_menu == 0) {_text = "[1] Start New Game"} else {_text = "[1] Chapter 1<br>[2] Chapter 2<br>[3] Chapter 3<br>[4] Custom Game"}; if (game_menu > 0) {_text += "<br><br>[0] Main Menu"} document.getElementById("HUD").innerHTML = _text};
-        
-        game(15, 15, 0, 1, 10, 10);
+        function menu(_page) {game_menu = _page; let _text; if (game_menu == 0) {_text = "[1] New Game<br>[2] Settings"} else {_text = "[1] Chapter 1<br>[2] Chapter 2<br>[3] Chapter 3<br>[4] Custom"}; if (game_menu > 0) {_text += "<br><br>[0] Back"} document.getElementById("HUD").innerHTML = _text};
+
+        function level(_i) {
+            if (_i == 1) {game(15, 15, 0, 1, 10, 10)}
+        };
+
+        level(1)
 
         //Player Action
         let player_tool = 1;
@@ -60,7 +64,7 @@
         window.addEventListener("keydown", function (event) {
             /*Toggle Dev*/ if (event.key == "=") {if (dev) {dev = 0} else {dev = 1}}; /*Pause Game*/ if (event.key == "`") {if (!game_state && Game.state) {gameResume()} else {game_state = 0}};
             if (game_state) {/*Movement*/ player_movement((Number(event.key == "d") - Number(event.key == "a")) + (Game.map_xSize * (Number(event.key == "s") - Number(event.key == "w")))); /*Fire*/ const fireKeys = ["o", "[", "k", "p"]; if (fireKeys.includes(event.key)) {Game.projectiles.push(new Projectile(/*_position*/ Game.player_mapI, /*_direction*/ ((Number(event.key == "[") - Number(event.key == "o"))) + (Game.map_xSize * (Number(event.key == "k") - Number(event.key == "p"))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))}; /*Change Tool*/ if (Number(event.key)) {player_tool = Number(event.key); console.log(player_tool)}
-            } else /*Rework this one please*/ {if (event.key == "1") {if (game_menu == 0) {/*Select Level*/ menu(1)} else {/*Start Game*/ game(15, 15, 0, 1, 10, 10)}}; if (event.key == "2") {}; if (event.key == "0" && game_menu > 0) {menu(game_menu - 1)}}});
+            } else {if (event.key == "1") {if (game_menu == 0) {/*Level Selection*/ menu(1)} else {/*Start Game*/ level(1)}}; if (event.key == "2") {}; if (event.key == "0" && game_menu > 0) {menu(game_menu - 1)}}});
 
         //Game Update        
         function game_update() {

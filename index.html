@@ -15,9 +15,7 @@
     <script>
         //Variable Setup
         let dev = 0, Game = {}, game_state = 0, game_clock = 0, menu_i = 0;
-        const Menu = {Test:{id:1, function:function() {console.log(game_menu)}}};
-        //console.log(Menu); Menu.Test.function()
-
+        
         //Functions 
         function Monster(A) {this.mapI = A, this.direction = 0,this.freed = false};
         function Projectile(A, B, C, D, E) {this.position = A; this.direction = B; this.range = C; this.destroyWall = D; this.damage = E; this.rangeI = 0};
@@ -52,6 +50,9 @@
         
         function gameResume() {if (Game.state) {game_state = 1; game_clock = setInterval(game_update, 20); document.getElementById("HUD").innerHTML = ""}};
 
+        const Menu = [{id:1, name:"New Game", function:console.log(menu_i)}];
+        function menu(_menuI) {if (_menuI == -1) {menu_i = 0} else if (_menuI == 0) {menu_i.splice(0, 1)} else {menu_i += Math.pow(10, menu_i.toString().length) * _menuI}; console.log(menu_i); /*if (Menu.find(e => e.id === menu_i)) {Menu.find}*/}
+
         //function menu(_page) {game_menu = _page; let _text; if (game_menu == 0) {_text = "[1] New Game<br>[2] Settings"} else if (game_menu == 1) {_text = "[1] Chapter 1<br>[2] Chapter 2 (WORK-IN-PROGRESS)<br>[3] Chapter 3 (WORK-IN-PROGRESS)<br>[4] Custom (WORK-IN-PROGRESS)"} else if (game_menu == 2) {_text = "[1] Controls (WORK-IN-PROGRESS)<br>[2] Text Align<br>[3] Color (WORK-IN-PROGRESS)"} else if (game_menu == 4) {_text = "Scene:<br>[1] Left<br>[2] Center<br>[3] Right<br><br>HUD:<br>[4] Left<br>[5] Center<br>[6] Right"}; if (game_menu > 0) {_text += "<br><br>[0] Main Menu"} document.getElementById("HUD").innerHTML = _text};
 
         function level(_i) {
@@ -67,8 +68,10 @@
             /*Toggle Dev*/ if (event.key == "=") {if (dev) {dev = 0} else {dev = 1}}; /*Pause Game*/ if (event.key == "`") {if (!game_state && Game.state) {gameResume()} else {game_state = 0}};
             if (game_state) {/*Movement*/ player_movement((Number(event.key == "d") - Number(event.key == "a")) + (Game.map_xSize * (Number(event.key == "s") - Number(event.key == "w")))); /*Fire*/ const fireKeys = ["o", "[", "k", "p"]; if (fireKeys.includes(event.key)) {Game.projectiles.push(new Projectile(/*_position*/ Game.player_mapI, /*_direction*/ ((Number(event.key == "[") - Number(event.key == "o"))) + (Game.map_xSize * (Number(event.key == "k") - Number(event.key == "p"))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))}; /*Change Tool*/ if (Number(event.key)) {player_tool = Number(event.key); /*console.log(player_tool)*/}
             } else {
-                menu_i = Number(event.key)
-                console.log(menu_i + "1")
+                if (Number(event.key) || event.key == 0) {menu(event.key)}
+                //Menu.find(Menu.find(e => e.id === 1).function)
+                //console.log(Object.keys({Menu})[0])
+                //console.log([menu_i].length)
                 //if (event.key == 0) {}
                 /*if (event.key == "1") {if (game_menu == 0) {/*New Game menu(1)} else if (game_menu == 1) /*Start Game {level(1)} else if (game_menu == 4) {document.getElementById("Scene").style = "text-align: left"}};
                 if (event.key == "2") {if (game_menu == 0) {/*Settings menu(2)} else if (game_menu == 2) {/*Text menu(4)} else if (game_menu == 4) {document.getElementById("Scene").style = "text-align: center"}};
@@ -94,7 +97,7 @@
     
                 //Projectile Code
                 Game.projectiles.forEach(Projectile => {/*Move Projectile*/ if (!Game.map_borders.includes(Projectile.position) && Game.map_diggeds.includes(Projectile.position) && Projectile.range && Projectile.rangeI < Projectile.range) {Projectile.position += Projectile.direction; Projectile.rangeI += 1} else {/*Dig Soft Block*/ if (!Game.map_diggeds.includes(Projectile.position) && Projectile.destroyWall) {Game.map_diggeds.push(Projectile.position)}; /*Dig Ore*/ if (Game.ores.includes(Projectile.position) && Projectile.destroyWall) {Game.ore_diggeds.push(Projectile.position); Game.ores.splice(Game.ores.indexOf(Projectile.position), 1)} /*Delete Projectile*/ Game.projectiles.splice(Game.projectiles.indexOf(this), 1)}});
-            } else {clearInterval(game_clock); /*menu(0)*/; return};   
+            } else {clearInterval(game_clock); menu(-1); return};   
         };
     </script>
 </html>

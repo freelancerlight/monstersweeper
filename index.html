@@ -51,9 +51,9 @@
         function gameResume() {if (Game.state) {game_state = 1; game_clock = setInterval(game_update, 20); document.getElementById("HUD").innerHTML = ""}};
 
         //Game Menu Setup
-        //Also please rename the Menu to Game Menu
-        const GameMenu = [{id:10, name:"New Game", function:function() {console.log("Hi")}}];
-        function gameMenu(_menuI) {if (_menuI == -1) {menu_i = 0} else if (_menuI == 0) {menu_i -= Math.pow(10, menu_i.toString().length - 1) * menu_i.toString().charAt(0)} else {menu_i += Math.pow(10, menu_i.toString().length) * _menuI}; console.log(menu_i); if (GameMenu.find(e => e.id === menu_i)) {GameMenu.find(e => e.id === menu_i).function(); console.log("Okay")}}
+        const GameMenu = [{id:1, name:"New Game", function:function() {console.log("Hi")}}];
+        function gameMenu(_menuI) {if (_menuI == -1) {menu_i = 0; console.log("menu_i: " + menu_i + " (Reseted)")} else if (_menuI == 0) {menu_i -= Math.pow(10, menu_i.toString().length - 1) * menu_i.toString().charAt(0); console.log("menu_i: " + menu_i + " (Decreased)")} else {const i_menu = _menuI; console.log("i_menu: " + i_menu); if (GameMenu.find(e => e.id === i_menu)) {GameMenu.find(e => e.id === i_menu).function()}; menu_i += Math.pow(10, menu_i.toString().length) * _menuI; ; console.log("menu_i: " + menu_i + " (Increased)")}};
+        //Please add console.log & comment for better debugging.
 
         //function menu(_page) {game_menu = _page; let _text; if (game_menu == 0) {_text = "[1] New Game<br>[2] Settings"} else if (game_menu == 1) {_text = "[1] Chapter 1<br>[2] Chapter 2 (WORK-IN-PROGRESS)<br>[3] Chapter 3 (WORK-IN-PROGRESS)<br>[4] Custom (WORK-IN-PROGRESS)"} else if (game_menu == 2) {_text = "[1] Controls (WORK-IN-PROGRESS)<br>[2] Text Align<br>[3] Color (WORK-IN-PROGRESS)"} else if (game_menu == 4) {_text = "Scene:<br>[1] Left<br>[2] Center<br>[3] Right<br><br>HUD:<br>[4] Left<br>[5] Center<br>[6] Right"}; if (game_menu > 0) {_text += "<br><br>[0] Main Menu"} document.getElementById("HUD").innerHTML = _text};
 
@@ -70,7 +70,7 @@
             /*Toggle Dev*/ if (event.key == "=") {if (dev) {dev = 0} else {dev = 1}}; /*Pause Game*/ if (event.key == "`") {if (!game_state && Game.state) {gameResume()} else {game_state = 0}};
             if (game_state) {/*Movement*/ player_movement((Number(event.key == "d") - Number(event.key == "a")) + (Game.map_xSize * (Number(event.key == "s") - Number(event.key == "w")))); /*Fire*/ const fireKeys = ["o", "[", "k", "p"]; if (fireKeys.includes(event.key)) {Game.projectiles.push(new Projectile(/*_position*/ Game.player_mapI, /*_direction*/ ((Number(event.key == "[") - Number(event.key == "o"))) + (Game.map_xSize * (Number(event.key == "k") - Number(event.key == "p"))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))}; /*Change Tool*/ if (Number(event.key)) {player_tool = Number(event.key); /*console.log(player_tool)*/}
             } else {
-                if (Number(event.key) || event.key == 0) {gameMenu(event.key)}
+                if (Number(event.key) || event.key == 0) {gameMenu(Number(event.key))}
                 //Menu.find(Menu.find(e => e.id === 1).function)
                 //console.log(Object.keys({Menu})[0])
                 //console.log([menu_i].length)

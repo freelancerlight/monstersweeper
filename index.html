@@ -51,7 +51,12 @@
         function gameResume() {if (Game.state) {game_state = 1; game_clock = setInterval(game_update, 20); document.getElementById("HUD").innerHTML = ""}};
 
         //Game Menu Setup
-        const GameMenu = [{id:10, name:"New Game", function:function() {}}, {id:110, name:"Chapter 1", function:function() {level(1)}}];
+        const GameMenu = [
+            {id:10, name:"New Game", function:function() {}},
+                {id:110, name:"Chapter 1", function:function() {level(1)}},
+            {id:20, name:"Settings", function:function() {}},
+                {id:120, name:"Controls", function:function() {}},
+        ];
         function gameMenuId (_gameMenuI) {
             const v_gameMenu = GameMenu.find(e => e.id === _gameMenuI);
             if (v_gameMenu) {v_gameMenu.function()};
@@ -103,17 +108,12 @@
             if (game_state) {/*Movement*/ player_movement((Number(event.key == "d") - Number(event.key == "a")) + (Game.map_xSize * (Number(event.key == "s") - Number(event.key == "w")))); /*Fire*/ const fireKeys = ["o", "[", "k", "p"]; if (fireKeys.includes(event.key)) {Game.projectiles.push(new Projectile(/*_position*/ Game.player_mapI, /*_direction*/ ((Number(event.key == "[") - Number(event.key == "o"))) + (Game.map_xSize * (Number(event.key == "k") - Number(event.key == "p"))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))}; /*Change Tool*/ if (Number(event.key)) {player_tool = Number(event.key); /*console.log(player_tool)*/}
             } else {
                 if (Number(event.key) || event.key == 0) {gameMenu(Number(event.key))}
-                //Menu.find(Menu.find(e => e.id === 1).function)
-                //console.log(Object.keys({Menu})[0])
-                //console.log([menu_i].length)
-                //if (event.key == 0) {}
                 /*if (event.key == "1") {if (game_menu == 0) {/*New Game menu(1)} else if (game_menu == 1) /*Start Game {level(1)} else if (game_menu == 4) {document.getElementById("Scene").style = "text-align: left"}};
                 if (event.key == "2") {if (game_menu == 0) {/*Settings menu(2)} else if (game_menu == 2) {/*Text menu(4)} else if (game_menu == 4) {document.getElementById("Scene").style = "text-align: center"}};
                 if (event.key == "3") {if (game_menu == 4) {document.getElementById("Scene").style = "text-align: right"}};
                 if (event.key == "4") {if (game_menu == 4) {document.getElementById("HUD").style = "text-align: left"}};
                 if (event.key == "5") {if (game_menu == 4) {document.getElementById("HUD").style = "text-align: center"}};
-                if (event.key == "6") {if (game_menu == 4) {document.getElementById("HUD").style = "text-align: right"}};
-                if (event.key == "0") {menu(0)}*/}});
+                if (event.key == "6") {if (game_menu == 4) {document.getElementById("HUD").style = "text-align: right"*/}});
 
         //Game Update        
         function game_update() {

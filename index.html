@@ -71,18 +71,20 @@
                 };
                 
             };
-            console.log(Object.keys({gameMenu_i})[0] + ": " + gameMenu_i);
-            console.log(Object.keys({_gameMenuI})[0] + ": " + _gameMenuI);
+            console.log(Object.keys({gameMenu_i})[0] + ": " + gameMenu_i + ", " + Object.keys({_gameMenuI})[0] + ": " + _gameMenuI);
             drawGameMenu();
         };
         function drawGameMenu() {
+            const log_drawGameMenu = []
             document.getElementById("HUD").innerHTML = ""
             for (let i_drawGameMenu = 1; i_drawGameMenu <= 9; i_drawGameMenu++) {
-                const test = gameMenu_i + (Math.pow(10, gameMenu_i.toString().length) * i_drawGameMenu)
-                if (GameMenu.find(e => e.id === test)) {document.getElementById("HUD").innerHTML += "[" + i_drawGameMenu + "] " + GameMenu.find(e => e.id === test).name + "<br>"}
-                //console.log(test)
-            }
-        }
+                const drawGameMenu_v = gameMenu_i + (Math.pow(10, gameMenu_i.toString().length) * i_drawGameMenu)
+                const v_drawGameMenu = GameMenu.find(e => e.id === drawGameMenu_v);
+                if (v_drawGameMenu) {document.getElementById("HUD").innerHTML += "[" + i_drawGameMenu + "] " + v_drawGameMenu.name + "<br>"}
+                log_drawGameMenu.push(drawGameMenu_v)
+            };
+            console.log("i_drawGameMenu: " + log_drawGameMenu)
+        };
         //Please add console.log & comment for better debugging.
 
         //function menu(_page) {game_menu = _page; let _text; if (game_menu == 0) {_text = "[1] New Game<br>[2] Settings"} else if (game_menu == 1) {_text = "[1] Chapter 1<br>[2] Chapter 2 (WORK-IN-PROGRESS)<br>[3] Chapter 3 (WORK-IN-PROGRESS)<br>[4] Custom (WORK-IN-PROGRESS)"} else if (game_menu == 2) {_text = "[1] Controls (WORK-IN-PROGRESS)<br>[2] Text Align<br>[3] Color (WORK-IN-PROGRESS)"} else if (game_menu == 4) {_text = "Scene:<br>[1] Left<br>[2] Center<br>[3] Right<br><br>HUD:<br>[4] Left<br>[5] Center<br>[6] Right"}; if (game_menu > 0) {_text += "<br><br>[0] Main Menu"} document.getElementById("HUD").innerHTML = _text};

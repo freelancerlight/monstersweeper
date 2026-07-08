@@ -14,7 +14,7 @@
     </body>
     <script>
         //Variable Setup
-        let dev = 0, Game = {}, game_state = 0, game_clock = 0, menu_i = 0;
+        let dev = 0, Game = {}, game_state = 0, game_clock = 0, gameMenu_i = 0;
         
         //Functions 
         function Monster(A) {this.mapI = A, this.direction = 0,this.freed = false};
@@ -51,8 +51,38 @@
         function gameResume() {if (Game.state) {game_state = 1; game_clock = setInterval(game_update, 20); document.getElementById("HUD").innerHTML = ""}};
 
         //Game Menu Setup
-        const GameMenu = [{id:1, name:"New Game", function:function() {console.log("Hi")}}];
-        function gameMenu(_menuI) {if (_menuI == -1) {menu_i = 0; console.log("menu_i: " + menu_i + " (Reseted)")} else if (_menuI == 0) {menu_i -= Math.pow(10, menu_i.toString().length - 1) * menu_i.toString().charAt(0); console.log("menu_i: " + menu_i + " (Decreased)")} else {const i_menu = _menuI; console.log("i_menu: " + i_menu); if (GameMenu.find(e => e.id === i_menu)) {GameMenu.find(e => e.id === i_menu).function()}; menu_i += Math.pow(10, menu_i.toString().length) * _menuI; ; console.log("menu_i: " + menu_i + " (Increased)")}};
+        const GameMenu = [{id:10, name:"New Game", function:function() {}}, {id:110, name:"Chapter 1", function:function() {level(1)}}];
+        function gameMenuId (_gameMenuI) {
+            const v_gameMenu = GameMenu.find(e => e.id === _gameMenuI);
+            if (v_gameMenu) {v_gameMenu.function()};
+        }
+        function gameMenu(_gameMenuI) {
+            /*Reset*/ if (_gameMenuI == -1) { 
+                gameMenu_i = 0;
+            } /*Decrease*/ else if (_gameMenuI == 0) { 
+                gameMenu_i -= Math.pow(10, gameMenu_i.toString().length - 1) * gameMenu_i.toString().charAt(0)
+                gameMenuId(gameMenu_i)
+            } /*Increase*/ else {
+                const i_gameMenu = Math.pow(10, gameMenu_i.toString().length) * _gameMenuI;
+                if (GameMenu.find(e => e.id === gameMenu_i + i_gameMenu)) {
+                    gameMenu_i += i_gameMenu;
+                    gameMenuId(gameMenu_i)
+                    console.log(Object.keys({i_gameMenu})[0] + ": " + i_gameMenu);
+                };
+                
+            };
+            console.log(Object.keys({gameMenu_i})[0] + ": " + gameMenu_i);
+            console.log(Object.keys({_gameMenuI})[0] + ": " + _gameMenuI);
+            drawGameMenu();
+        };
+        function drawGameMenu() {
+            document.getElementById("HUD").innerHTML = ""
+            for (let i_drawGameMenu = 1; i_drawGameMenu <= 9; i_drawGameMenu++) {
+                const test = gameMenu_i + (Math.pow(10, gameMenu_i.toString().length) * i_drawGameMenu)
+                if (GameMenu.find(e => e.id === test)) {document.getElementById("HUD").innerHTML += "[" + i_drawGameMenu + "] " + GameMenu.find(e => e.id === test).name + "<br>"}
+                //console.log(test)
+            }
+        }
         //Please add console.log & comment for better debugging.
 
         //function menu(_page) {game_menu = _page; let _text; if (game_menu == 0) {_text = "[1] New Game<br>[2] Settings"} else if (game_menu == 1) {_text = "[1] Chapter 1<br>[2] Chapter 2 (WORK-IN-PROGRESS)<br>[3] Chapter 3 (WORK-IN-PROGRESS)<br>[4] Custom (WORK-IN-PROGRESS)"} else if (game_menu == 2) {_text = "[1] Controls (WORK-IN-PROGRESS)<br>[2] Text Align<br>[3] Color (WORK-IN-PROGRESS)"} else if (game_menu == 4) {_text = "Scene:<br>[1] Left<br>[2] Center<br>[3] Right<br><br>HUD:<br>[4] Left<br>[5] Center<br>[6] Right"}; if (game_menu > 0) {_text += "<br><br>[0] Main Menu"} document.getElementById("HUD").innerHTML = _text};
@@ -90,9 +120,6 @@
                 let scene_text = "";
                 for (let scene_i = 1, i_x = 0; scene_i <= Game.map_iL; scene_i++) {/*Player*/ if (scene_i == Game.player_mapI) {scene_text += "@"} /*Border*/ else if (Game.map_borders.includes(scene_i)) {if (dev) {scene_text += "X"} else {continue}} /*Projectile*/ else if (Game.projectiles.some(Projectile => Projectile.position === scene_i)) {scene_text += "%"} /*Ore*/ else if (Game.ores.includes(scene_i)) {scene_text += "$"} /*Ore Digged*/ else if (Game.ore_diggeds.includes(scene_i)) {scene_text += "*"} /*Wall*/ else if (!Game.map_diggeds.includes(scene_i)) {scene_text += "#"} /*Monster*/ else if (Game.monsters.includes(scene_i)) {scene_text += "!"} /*Pattern*/ else {let _pattern = 0; for (let y_i = -1; y_i < 2; y_i++) {for (let x_i = -1; x_i < 2; x_i++) {if (Game.monsters.includes(scene_i - x_i - y_i * Game.map_xSize)) {_pattern++}}}; (_pattern > 0) ? scene_text += _pattern : /*Empty*/ scene_text += "."}; /*Next Loop*/ i_x++; /*Add Line Break*/ if ((i_x == Game.map_xSize && dev) || (i_x == Game.map_xSize - 2 && !dev)) {scene_text += "<br>"; i_x = 0}};
                 document.getElementById("Scene").innerHTML = scene_text;
-    
-                //Player Code
-                //for (let i = 0; i < Game.ores.length; i++) {if (Game.ores[i] == Game.player_mapI) {Game.ore_diggeds.push(Game.ores[i]); Game.ores.splice(i, 1)}};
     
                 //Monster Code
                 //monsters.forEach(monster => {if (!monster.freed) {monster.freed = true}; /*Detection*/ if (!map_diggeds.includes(monster.mapI)) {for (let direction_i = 0; direction_i < 4; direction_i++) {for (let i = monster.mapI; !map_diggeds.includes(i) && !map_borders.includes(i); i += directions[direction_i]) {console.log(monster.mapI); /*console.log(map_diggeds.includes(i))*/}}} /*&& !map_borders.includes(monster.mapI + 1) && map_diggeds.includes(monster.mapI + monster.direction)) {monster.mapI += monster.direction}*/});

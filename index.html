@@ -57,18 +57,24 @@
                 {id:110, name:"Chapter 1", function:function() {level(1)}},
             {id:20, name:"Settings", function:function() {}},
                 {id:120, name:"Controls", function:function() {}},
-                    {id:1120, name:"Move Left", key:65, function:function() {function rebind(_event) {(GameMenu.find(e => e.id === 1120)).key = _event.which, console.log(GameMenu.find(e => e.id === 1120).key), window.removeEventListener("keydown", rebind)}; window.addEventListener("keydown", rebind), console.log(GameMenu.find(e => e.id === 1120).key)}}
+                    {id:1120, name:"Move Left", key:65, function:function() {function rebind(_event) {
+                        (GameMenu.find(e => e.id === 1120)).key = _event.which;
+                        console.log(GameMenu.find(e => e.id === 1120).key);
+                        window.removeEventListener("keydown", rebind);
+                        gameMenuDecrease();
+                        drawGameMenu();
+                    }; window.addEventListener("keydown", rebind), console.log(GameMenu.find(e => e.id === 1120).key)}}
         ];
         function gameMenuId (_gameMenuI) {
             const v_gameMenu = GameMenu.find(e => e.id === _gameMenuI);
             if (v_gameMenu) {v_gameMenu.function()};
         }
+        function gameMenuDecrease() {gameMenu_i -= Math.pow(10, gameMenu_i.toString().length - 1) * gameMenu_i.toString().charAt(0); gameMenuId(gameMenu_i)}
         function gameMenu(_gameMenuI) {
             /*Reset*/ if (_gameMenuI == -1) { 
                 gameMenu_i = 0;
             } /*Decrease*/ else if (_gameMenuI == 0) { 
-                gameMenu_i -= Math.pow(10, gameMenu_i.toString().length - 1) * gameMenu_i.toString().charAt(0)
-                gameMenuId(gameMenu_i)
+                gameMenuDecrease()
             } /*Increase*/ else {
                 const i_gameMenu = Math.pow(10, gameMenu_i.toString().length) * _gameMenuI;
                 if (GameMenu.find(e => e.id === gameMenu_i + i_gameMenu)) {
@@ -114,7 +120,7 @@
             };
             /*Pause Game*/ if (event.key == "`") {if (!game_state && Game.state) {gameResume()} else {game_state = 0}};
             if (game_state) {
-                /*Movement*/ player_movement((Number(event.key == "d") - Number(event.key == "a")) + (Game.map_xSize * (Number(event.key == "s") - Number(event.key == "w"))));
+                /*Movement*/ player_movement((Number(event.key == "d") - Number(event.which == GameMenu.find(e => e.id === 1120).key)) + (Game.map_xSize * (Number(event.key == "s") - Number(event.key == "w"))));
                 console.log("player_mapI: " + Game.player_mapI)
                 
                 /*Fire*/ const fireKeys = ["o", "[", "k", "p"];

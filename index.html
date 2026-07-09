@@ -52,19 +52,29 @@
 
         //Game Menu Setup
         //const player_controls = {moveLeft:65, moveRight:68, moveDown:83, moveUp:87, useToolLeft:79, useToolRight:219, useToolDown:75, useToolUp:80};
+        let gameMenu_using = false
         const GameMenu = [
             {id:10, name:"New Game", function:function() {}},
                 {id:110, name:"Chapter 1", function:function() {level(1)}},
             {id:20, name:"Settings", function:function() {}},
                 {id:120, name:"Controls", function:function() {}},
-                    {id:1120, name:"Move Left", key:65, function:function() {function rebind(_event) {
-                        (GameMenu.find(e => e.id === 1120)).key = _event.which;
-                        console.log(GameMenu.find(e => e.id === 1120).key);
-                        window.removeEventListener("keydown", rebind);
-                        gameMenuDecrease();
-                        drawGameMenu();
-                    }; window.addEventListener("keydown", rebind), console.log(GameMenu.find(e => e.id === 1120).key)}}
+                    {id:1120, name:"Move Left", key:65, function:function() {rebind(1120)}}
         ];
+        function rebind(_gameMenuId) {
+            const v_gameMenuBind = GameMenu.find(e => e.id === _gameMenuId).key
+            function bind(_event) {
+                (GameMenu.find(e => e.id === _gameMenuId)).key = _event.which;
+                console.log("After: " + v_gameMenuBind);
+                window.removeEventListener("keydown", bind);
+                gameMenu_using = false
+                gameMenuDecrease();
+                drawGameMenu();
+            };
+            window.addEventListener("keydown", bind);
+            gameMenu_using = true
+            document.getElementById("HUD").innerHTML = "'Press any key to rebind selected key'"
+            console.log("Before: " + v_gameMenuBind)
+        };
         function gameMenuId (_gameMenuI) {
             const v_gameMenu = GameMenu.find(e => e.id === _gameMenuI);
             if (v_gameMenu) {v_gameMenu.function()};
@@ -84,7 +94,7 @@
                 };
             };
             console.log(Object.keys({gameMenu_i})[0] + ": " + gameMenu_i + ", " + Object.keys({_gameMenuI})[0] + ": " + _gameMenuI);
-            drawGameMenu();
+            if (!gameMenu_using) {drawGameMenu()};
         };
         function drawGameMenu() {
             const log_drawGameMenu = []

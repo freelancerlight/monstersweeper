@@ -53,12 +53,20 @@
         //Game Menu Setup
         //const player_controls = {moveLeft:65, moveRight:68, moveDown:83, moveUp:87, useToolLeft:79, useToolRight:219, useToolDown:75, useToolUp:80};
         let gameMenu_using = false
+        //function gameMenuKey(_keyId, _keyName, _keyKey) {id:_keyId, name:_keyName, key:_keyKey, function:function() {rebind(this.id)}}
         const GameMenu = [
             {id:10, name:"New Game", function:function() {}},
                 {id:110, name:"Chapter 1", function:function() {level(1)}},
             {id:20, name:"Settings", function:function() {}},
                 {id:120, name:"Controls", function:function() {}},
-                    {id:1120, name:"Move Left", key:65, function:function() {rebind(1120)}}
+                    {id:1120, name:"Move Left", key:65, function:function() {rebind(this.id)}},
+                    {id:2120, name:"Move Right", key:68, function:function() {rebind(this.id)}},
+                    {id:3120, name:"Move Down", key:83, function:function() {rebind(this.id)}},
+                    {id:4120, name:"Move Up", key:87, function:function() {rebind(this.id)}},
+                    {id:5120, name:"Use Tool Left", key:79, function:function() {rebind(this.id)}},
+                    {id:6120, name:"Use Tool Right", key:219, function:function() {rebind(this.id)}},
+                    {id:7120, name:"Use Tool Down", key:75, function:function() {rebind(this.id)}},
+                    {id:8120, name:"Use Tool Up", key:80, function:function() {rebind(this.id)}}
         ];
         function rebind(_gameMenuId) {
             const v_gameMenuBind = GameMenu.find(e => e.id === _gameMenuId).key
@@ -112,7 +120,6 @@
             if (v_gameMenuBack) {document.getElementById("HUD").innerHTML += "<br>[0] Back"};
             console.log(Object.keys({gameMenuBack_v})[0] + ": " + gameMenuBack_v);
         };
-        //Please add console.log & comment for better debugging.
 
         function level(_i) {
             if (_i == 1) {game(15, 15, 0, 1, 10, 10)};
@@ -122,6 +129,8 @@
 
         //Player Action
         let player_tool = 1;
+        function player_key(_playerKey) {return GameMenu.find(e => e.id === _playerKey).key}
+        function player_actionKey(_playerActionKey) {return Number(event.which == player_key(_playerActionKey))}
         function player_movement(_direction) {if (!Game.map_borders.includes(Game.player_mapI + _direction) && Game.map_diggeds.includes(Game.player_mapI + _direction)) {Game.player_mapI += _direction}}
         window.addEventListener("keydown", function (event) {
             /*Toggle Dev*/ if (event.key == "=") {
@@ -130,14 +139,14 @@
             };
             /*Pause Game*/ if (event.key == "`") {if (!game_state && Game.state) {gameResume()} else {game_state = 0}};
             if (game_state) {
-                /*Movement*/ player_movement((Number(event.key == "d") - Number(event.which == GameMenu.find(e => e.id === 1120).key)) + (Game.map_xSize * (Number(event.key == "s") - Number(event.key == "w"))));
+                /*Movement*/ player_movement((player_actionKey(2120) - player_actionKey(1120)) + (Game.map_xSize * (player_actionKey(3120) - player_actionKey(4120))));
                 console.log("player_mapI: " + Game.player_mapI)
                 
-                /*Fire*/ const fireKeys = ["o", "[", "k", "p"];
-                if (fireKeys.includes(event.key)) {Game.projectiles.push(new Projectile(/*_position*/ Game.player_mapI, /*_direction*/ ((Number(event.key == "[") - Number(event.key == "o"))) + (Game.map_xSize * (Number(event.key == "k") - Number(event.key == "p"))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))};
+                /*Fire*/ const fireKeys = [player_key(5120), player_key(6120), player_key(7120), player_key(8120)];
+                if (fireKeys.includes(event.which)) {Game.projectiles.push(new Projectile(/*_position*/ Game.player_mapI, /*_direction*/ (player_actionKey(6120) - player_actionKey(5120)) + (Game.map_xSize * (player_actionKey(7120) - player_actionKey(8120))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))};
                 
                 /*Change Tool if (Number(event.key)) {player_tool = Number(event.key); console.log(player_tool)*/
-            } else {if (Number(event.key) || event.key == 0) {gameMenu(Number(event.key))}}});
+            } else {if (Number(event.key) || event.key == 0) {gameMenu(Number(event.key))}}; console.log("Player Key: " + event.which)});
 
         //Game Update        
         function game_update() {

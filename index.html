@@ -51,14 +51,19 @@
         function gameResume() {if (Game.state) {game_state = 1; game_clock = setInterval(game_update, 20); document.getElementById("HUD").innerHTML = ""}};
 
         //Game Menu Setup
-        //const player_controls = {moveLeft:65, moveRight:68, moveDown:83, moveUp:87, useToolLeft:79, useToolRight:219, useToolDown:75, useToolUp:80};
         let gameMenu_using = false
-        //function gameMenuKey(_keyId, _keyName, _keyKey) {id:_keyId, name:_keyName, key:_keyKey, function:function() {rebind(this.id)}}
+        function gameMenuObjectKey(gameMenuObject_id, gameMenuObject_name, gameMenuObject_key) {
+            this.id = gameMenuObject_id;
+            this.name = gameMenuObject_name;
+            this.key = gameMenuObject_key;
+            this.function = function() {rebind(this.id)}
+        };
         const GameMenu = [
             {id:10, name:"New Game", function:function() {}},
                 {id:110, name:"Chapter 1", function:function() {level(1)}},
             {id:20, name:"Settings", function:function() {}},
                 {id:120, name:"Controls", function:function() {}},
+                    //new gameMenuObjectKey(1120, "Move Left", "a"),
                     {id:1120, name:"Move Left", key:"a", function:function() {rebind(this.id)}},
                     {id:2120, name:"Move Right", key:"d", function:function() {rebind(this.id)}},
                     {id:3120, name:"Move Down", key:"s", function:function() {rebind(this.id)}},
@@ -110,14 +115,14 @@
             for (let i_drawGameMenu = 1; i_drawGameMenu <= 9; i_drawGameMenu++) {
                 const drawGameMenu_v = gameMenu_i + (Math.pow(10, gameMenu_i.toString().length) * i_drawGameMenu)
                 const v_drawGameMenu = GameMenu.find(e => e.id === drawGameMenu_v);
-                if (v_drawGameMenu) {document.getElementById("HUD").innerHTML += "[" + i_drawGameMenu + "] " + v_drawGameMenu.name + "<br>"};
-                log_drawGameMenu.push(drawGameMenu_v)
+                if (v_drawGameMenu) {document.getElementById("HUD").innerHTML += "[" + i_drawGameMenu + "] " + v_drawGameMenu.name};
+                if (v_drawGameMenu?.key) {document.getElementById("HUD").innerHTML += " - " + v_drawGameMenu.key}
+                if (v_drawGameMenu) {document.getElementById("HUD").innerHTML += "<br>";}
+                log_drawGameMenu.push(drawGameMenu_v);
             };
             console.log("i_drawGameMenu: " + log_drawGameMenu)
-            
-            const gameMenuBack_v = Math.pow(10, gameMenu_i.toString().length - 1) * gameMenu_i.toString().charAt(0);
-            const v_gameMenuBack = GameMenu.find(e => e.id === gameMenuBack_v)
-            if (v_gameMenuBack) {document.getElementById("HUD").innerHTML += "<br>[0] Back"};
+
+            if (gameMenu_i > 0 && !game_state) {document.getElementById("HUD").innerHTML += "<br>[0] Back"};
             console.log(Object.keys({gameMenuBack_v})[0] + ": " + gameMenuBack_v);
         };
 

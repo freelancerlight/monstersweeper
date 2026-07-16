@@ -147,14 +147,15 @@
             };
             
             if (game_state && Game.state) {
-                function playerKey(playerKey_v) {return settings_playerControls[playerKey_v]}
-                function player_actionKey(_playerActionKey) {return Number(event.key == player_key(_playerActionKey))}
-                function player_movement(_direction) {if (!Game.map_borders.includes(Game.player_mapI + _direction) && Game.map_diggeds.includes(Game.player_mapI + _direction)) {Game.player_mapI += _direction}};
+                function playerKey(playerKey_v) {return Number(settings_playerControls[playerKey_v].includes(event.key))};
+                //function player_actionKey(_playerActionKey) {return Number(event.key == player_key(_playerActionKey))}
+                function playerGeneralAction(playerGeneralAction_left, playerGeneralAction_right, playerGeneralAction_down, playerGeneralAction_up) {return (playerKey(playerGeneralAction_right) - playerKey(playerGeneralAction_left)) + (Game.map_xSize * (playerKey(playerGeneralAction_down) - playerKey(playerGeneralAction_up)))}
+                function playerMovement(_direction) {if (!Game.map_borders.includes(Game.player_mapI + _direction) && Game.map_diggeds.includes(Game.player_mapI + _direction)) {Game.player_mapI += _direction}};
                 
-                /*Movement*/ player_movement((player_actionKey(2120) - player_actionKey(1120)) + (Game.map_xSize * (player_actionKey(3120) - player_actionKey(4120))));
+                playerMovement(playerGeneralAction(0, 1, 2, 3));
                 
-                /*Fire*/ const fireKeys = [player_key(5120), player_key(6120), player_key(7120), player_key(8120)];
-                if (fireKeys.includes(event.key)) {Game.projectiles.push(new Projectile(/*_position*/ Game.player_mapI, /*_direction*/ (player_actionKey(6120) - player_actionKey(5120)) + (Game.map_xSize * (player_actionKey(7120) - player_actionKey(8120))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))};
+                const v_event = playerGeneralAction(4, 5, 6, 7);
+                if (v_event != 0) {Game.projectiles.push(new Projectile(/*_position*/ Game.player_mapI, /*_direction*/ v_event, /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))};
                 
                 /*Change Tool if (Number(event.key)) {player_tool = Number(event.key); console.log(player_tool)*/
             } else if (game_state == 0) {if (event.key == 0) {gameMenu(-1)} else if (Number(event.key)) {gameMenu(Number(event.key))}}});

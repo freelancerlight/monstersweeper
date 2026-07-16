@@ -8,13 +8,34 @@
         </style>
         <title>Monstersweeper</title>
     </head>
-    <body>
-        <p id="Scene">Loading... (or broken if the second have passed)</p>
-        <p id="HUD"></p>
+    <body id="Main">
+        <p id="Scene">Monstersweeper</p>
+        <p id="System">🄯2026 Jie (杰) 3JUMPAB</p>
+        <p id="HUD">Press "`" to open the game menu.</p>
     </body>
     <script>
         //Variable Setup
-        let dev = 0, Game = {}, game_state = 0, game_clock = 0, gameMenu_i = 0;
+        let dev = 0, Game = {}, game_state = 0, game_clock = 0, menu_i = 0;
+
+        //function defaultSettings() {settings_playerControls.push(...default_playerControls)};
+        function changeSetting(changeSetting_name, changeSetting_v) {localStorage.setItem(changeSetting_name, changeSetting_v)};
+        
+        const default_playerControls = ["a", "d", "s", "w", "o", "[", "k", "p"]
+        const settings_playerControls = []
+        if (localStorage.playerControls !== null && localStorage.playerControls !== undefined) {settings_playerControls.push(...JSON.parse(localStorage.playerControls))} else {settings_playerControls.push(...default_playerControls)};
+        const settings_gameBackgroundColors = ["#000000", "#606060", null, "#404040", null, "#ffffff"];
+        const settings_gameColors = [null, "#ffffff", "#808080", "#ffffff"];
+
+        /*changeColor(true, "Main", 0);
+        changeColor(false, "Scene", 1);
+        changeColor(false, "HUD", 3);*/
+        changeColor(true, "System", 0);
+        changeColor(false, "System", 1);
+        
+        function playerKeyCheck(playerKeyCheck_key) {if (event.key == playerKeyCheck_key) {return true} else {return false}};
+        function changeColor(changeColor_background, changeColor_v, changeColor_i) {if (changeColor_background) {document.getElementById(changeColor_v).style.backgroundColor = settings_gameBackgroundColors[changeColor_i]} else {document.getElementById(changeColor_v).style.color = settings_gameColors[changeColor_i]}};
+
+        function changeText(changeText_type, changeText_name, changeText_v) {if (changeText_type) {document.getElementById(changeText_name).innerHTML += changeText_v} else {document.getElementById(changeText_name).innerHTML = changeText_v}};
         
         //Functions 
         function Monster(A) {this.mapI = A, this.direction = 0,this.freed = false};
@@ -47,113 +68,99 @@
             console.log(Game);
             gameResume()
         };
-        
-        function gameResume() {if (Game.state) {game_state = 1; game_clock = setInterval(game_update, 20); document.getElementById("HUD").innerHTML = ""}};
 
         //Game Menu Setup
         let gameMenu_using = false
-        function gameMenuObjectKey(gameMenuObject_id, gameMenuObject_name, gameMenuObject_key) {
-            this.id = gameMenuObject_id;
-            this.name = gameMenuObject_name;
-            this.key = gameMenuObject_key;
-            this.function = function() {rebind(this.id)}
-        };
-        const GameMenu = [
-            {id:10, name:"New Game", function:function() {}},
-                {id:110, name:"Chapter 1", function:function() {level(1)}},
-            {id:20, name:"Settings", function:function() {}},
-                {id:120, name:"Controls", function:function() {}},
-                    //new gameMenuObjectKey(1120, "Move Left", "a"),
-                    {id:1120, name:"Move Left", key:"a", function:function() {rebind(this.id)}},
-                    {id:2120, name:"Move Right", key:"d", function:function() {rebind(this.id)}},
-                    {id:3120, name:"Move Down", key:"s", function:function() {rebind(this.id)}},
-                    {id:4120, name:"Move Up", key:"w", function:function() {rebind(this.id)}},
-                    {id:5120, name:"Use Tool Left", key:"o", function:function() {rebind(this.id)}},
-                    {id:6120, name:"Use Tool Right", key:"[", function:function() {rebind(this.id)}},
-                    {id:7120, name:"Use Tool Down", key:"k", function:function() {rebind(this.id)}},
-                    {id:8120, name:"Use Tool Up", key:"p", function:function() {rebind(this.id)}}
-        ];
-        function rebind(_gameMenuId) {
-            const v_gameMenuBind = GameMenu.find(e => e.id === _gameMenuId).key
+        function gameMenuEmptyObject(gameMenuEmptyObject_id, gameMenuEmptyObject_name) {
+            this.id = gameMenuEmptyObject_id;
+            this.name = gameMenuEmptyObject_name;
+            this.function = function() {}
+        }
+        function gameMenuRebindObject(gameMenuRebindObject_id, gameMenuRebindObject_name, gameMenuRebindObject_key) {
+            this.id = gameMenuRebindObject_id;
+            this.name = gameMenuRebindObject_name;
+            this.nameExtra = function() {return settings_playerControls[gameMenuRebindObject_key]}
+            this.function = function() {rebind(gameMenuRebindObject_key)}
+        }
+        function rebind(rebind_id) {
             function bind(event) {
-                (GameMenu.find(e => e.id === _gameMenuId)).key = event.key;
-                console.log("After: " + v_gameMenuBind);
+                settings_playerControls[rebind_id] = event.key;
+                changeText(0, "System", "Control Rebinded: " + event.key);
+                changeSetting("playerControls", JSON.stringify(settings_playerControls))
                 window.removeEventListener("keydown", bind);
                 gameMenu_using = false
-                gameMenuDecrease();
-                drawGameMenu();
+                changeGameMenu(-gameMenuDecrease())
             };
             window.addEventListener("keydown", bind);
-            gameMenu_using = true
-            document.getElementById("HUD").innerHTML = "'Press any key to rebind selected key'"
-            console.log("Before: " + v_gameMenuBind)
+            gameMenu_using = true;
+            changeText(0, "HUD", "");
+            changeText(0, "System", "'Press any key to rebind selected key'");
         };
-        function gameMenuId (_gameMenuI) {
-            const v_gameMenu = GameMenu.find(e => e.id === _gameMenuI);
-            if (v_gameMenu) {v_gameMenu.function()};
+        const GameMenu = [
+            new gameMenuEmptyObject(10, "New Game"),
+                {id:110, name:"Chapter 1", function:function() {level(1)}},
+            new gameMenuEmptyObject(20, "Settings"),
+                new gameMenuEmptyObject(120, "Controls"),
+                    new gameMenuRebindObject(1120, "Move Left", 0),
+                    new gameMenuRebindObject(2120, "Move Right", 1),
+                    new gameMenuRebindObject(3120, "Move Down", 2),
+                    new gameMenuRebindObject(4120, "Move Up", 3),
+                    new gameMenuRebindObject(5120, "Use Tool Left", 4),
+                    new gameMenuRebindObject(6120, "Use Tool Right", 5),
+                    new gameMenuRebindObject(7120, "Use Tool Down", 6),
+                    new gameMenuRebindObject(8120, "Use Tool Up", 7),
+                {id:920, name:"Delete Settings Data", function:function() {localStorage.clear(); settings_playerControls.splice(0, settings_playerControls.length); settings_playerControls.push(...default_playerControls)}}
+        ];
+        function gameMenuIncrease(gameMenuIncrease_v) {return Math.pow(10, menu_i.toString().length) * gameMenuIncrease_v};
+        function gameMenuDecrease() {return Math.pow(10, menu_i.toString().length - 1) * menu_i.toString().charAt(0)};
+        function gameMenuCheck(gameMenuCheck_v) {return GameMenu.find(e => e.id === gameMenuCheck_v)};
+        function changeGameMenu(changeGameMenu_v) {
+            menu_i += changeGameMenu_v;
+            if (gameMenuCheck(menu_i)) {gameMenuCheck(menu_i).function()};
+            drawGameMenu();
         }
-        function gameMenuDecrease() {gameMenu_i -= Math.pow(10, gameMenu_i.toString().length - 1) * gameMenu_i.toString().charAt(0); gameMenuId(gameMenu_i)}
-        function gameMenu(_gameMenuI) {
-            /*Reset*/ if (_gameMenuI == -1) { 
-                gameMenu_i = 0;
-            } /*Decrease*/ else if (_gameMenuI == 0) { 
-                gameMenuDecrease()
-            } /*Increase*/ else {
-                const i_gameMenu = Math.pow(10, gameMenu_i.toString().length) * _gameMenuI;
-                if (GameMenu.find(e => e.id === gameMenu_i + i_gameMenu)) {
-                    gameMenu_i += i_gameMenu;
-                    gameMenuId(gameMenu_i)
-                    console.log(Object.keys({i_gameMenu})[0] + ": " + i_gameMenu);
-                };
-            };
-            console.log(Object.keys({gameMenu_i})[0] + ": " + gameMenu_i + ", " + Object.keys({_gameMenuI})[0] + ": " + _gameMenuI);
-            if (!gameMenu_using) {drawGameMenu()};
-        };
+        function gameMenu(gameMenu_v) {if (gameMenu_v == -1) {changeGameMenu(-gameMenuDecrease())} else if (gameMenu_v == 0) {changeText(0, "HUD", "")} else if (gameMenuCheck(menu_i + gameMenuIncrease(gameMenu_v))) {changeGameMenu(gameMenuIncrease(gameMenu_v))} else {drawGameMenu()}};
         function drawGameMenu() {
-            const log_drawGameMenu = []
-            document.getElementById("HUD").innerHTML = ""
-            for (let i_drawGameMenu = 1; i_drawGameMenu <= 9; i_drawGameMenu++) {
-                const drawGameMenu_v = gameMenu_i + (Math.pow(10, gameMenu_i.toString().length) * i_drawGameMenu)
-                const v_drawGameMenu = GameMenu.find(e => e.id === drawGameMenu_v);
-                if (v_drawGameMenu) {document.getElementById("HUD").innerHTML += "[" + i_drawGameMenu + "] " + v_drawGameMenu.name};
-                if (v_drawGameMenu?.key) {document.getElementById("HUD").innerHTML += " - " + v_drawGameMenu.key}
-                if (v_drawGameMenu) {document.getElementById("HUD").innerHTML += "<br>";}
-                log_drawGameMenu.push(drawGameMenu_v);
-            };
-            console.log("i_drawGameMenu: " + log_drawGameMenu)
-
-            if (gameMenu_i > 0 && !game_state) {document.getElementById("HUD").innerHTML += "<br>[0] Back"};
-            console.log(Object.keys({gameMenuBack_v})[0] + ": " + gameMenuBack_v);
+            if (!gameMenu_using) {
+                changeText(0, "HUD", "")
+                for (let i_drawGameMenu = 1; i_drawGameMenu <= 9; i_drawGameMenu++) {
+                    const v_drawGameMenu = gameMenuCheck(menu_i + gameMenuIncrease(i_drawGameMenu));
+                    if (v_drawGameMenu) {changeText(1, "HUD", "[" + i_drawGameMenu + "] " + v_drawGameMenu.name)};
+                    if (v_drawGameMenu?.nameExtra) {changeText(1, "HUD", " - " + v_drawGameMenu.nameExtra())};
+                    changeText(1, "HUD", "<br>");
+                };
+                if (menu_i > 0 && !game_state) {changeText(1, "HUD", "<br>[0] Back")};   
+            }
         };
-
+        
         function level(_i) {
             if (_i == 1) {game(15, 15, 0, 1, 10, 10)};
         };
-
-        level(1)
 
         //Player Action
         let player_tool = 1;
         function player_key(_playerKey) {return GameMenu.find(e => e.id === _playerKey).key}
         function player_actionKey(_playerActionKey) {return Number(event.key == player_key(_playerActionKey))}
-        function player_movement(_direction) {if (!Game.map_borders.includes(Game.player_mapI + _direction) && Game.map_diggeds.includes(Game.player_mapI + _direction)) {Game.player_mapI += _direction}}
+        function player_movement(_direction) {if (!Game.map_borders.includes(Game.player_mapI + _direction) && Game.map_diggeds.includes(Game.player_mapI + _direction)) {Game.player_mapI += _direction}};
         window.addEventListener("keydown", function (event) {
-            /*Toggle Dev*/ if (event.key == "=") {
-                if (dev) {dev = 0} else {dev = 1};
-                console.log(Object.keys({dev})[0] + ": " + dev)
+            if (playerKeyCheck("=")) {if (dev) {dev = 0} else {dev = 1}};
+            if (playerKeyCheck("`")) {
+                if (!game_state && Game.state) {gameResume()} else {gamePause()};
+                changeText(0, "System", "");
+                //changeColor(false, "Scene", 2 - game_state);
             };
-            /*Pause Game*/ if (event.key == "`") {if (!game_state && Game.state) {gameResume()} else {game_state = 0}};
             if (game_state) {
                 /*Movement*/ player_movement((player_actionKey(2120) - player_actionKey(1120)) + (Game.map_xSize * (player_actionKey(3120) - player_actionKey(4120))));
-                console.log("player_mapI: " + Game.player_mapI)
                 
                 /*Fire*/ const fireKeys = [player_key(5120), player_key(6120), player_key(7120), player_key(8120)];
                 if (fireKeys.includes(event.key)) {Game.projectiles.push(new Projectile(/*_position*/ Game.player_mapI, /*_direction*/ (player_actionKey(6120) - player_actionKey(5120)) + (Game.map_xSize * (player_actionKey(7120) - player_actionKey(8120))), /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))};
                 
                 /*Change Tool if (Number(event.key)) {player_tool = Number(event.key); console.log(player_tool)*/
-            } else {if (Number(event.key) || event.key == 0) {gameMenu(Number(event.key))}}; console.log("Player Key: " + event.key)});
+            } else {if (event.key == 0) {gameMenu(-1)} else if (Number(event.key)) {gameMenu(Number(event.key))}}});
 
-        //Game Update        
+        //Game
+        function gamePause() {if (typeof game_clock !== "undefined") {clearInterval(game_clock)}; game_state = 0; menu_i = 0; gameMenu()};
+        function gameResume() {game_state = 1; game_clock = setInterval(game_update, 20); changeText(0, "HUD", "")};
         function game_update() {
             if (game_state) {
                 //Generate Scene
@@ -166,7 +173,7 @@
     
                 //Projectile Code
                 Game.projectiles.forEach(Projectile => {/*Move Projectile*/ if (!Game.map_borders.includes(Projectile.position) && Game.map_diggeds.includes(Projectile.position) && Projectile.range && Projectile.rangeI < Projectile.range) {Projectile.position += Projectile.direction; Projectile.rangeI += 1} else {/*Dig Soft Block*/ if (!Game.map_diggeds.includes(Projectile.position) && Projectile.destroyWall) {Game.map_diggeds.push(Projectile.position)}; /*Dig Ore*/ if (Game.ores.includes(Projectile.position) && Projectile.destroyWall) {Game.ore_diggeds.push(Projectile.position); Game.ores.splice(Game.ores.indexOf(Projectile.position), 1)} /*Delete Projectile*/ Game.projectiles.splice(Game.projectiles.indexOf(this), 1)}});
-            } else {clearInterval(game_clock); gameMenu(-1); return};   
+            };   
         };
     </script>
 </html>

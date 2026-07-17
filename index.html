@@ -27,7 +27,7 @@
         const settings_gameBackgroundColors = ["#000000", "#606060", null, "#404040", null, "#ffffff"];
         const settings_gameColors = [null, "#000000", "#808080", "#ffffff"];
         
-        changeText(0, "HUD", gameHUDText)
+        changeText(0, "HUD", gameHUDText);
         
         changeColor(true, "Main", 5);
         /*changeColor(false, "Scene", 1);
@@ -43,7 +43,8 @@
         //Functions 
         function Monster(A) {this.mapI = A, this.direction = 0,this.freed = false};
         function Projectile(A, B, C, D, E) {this.position = A; this.direction = B; this.range = C; this.destroyWall = D; this.damage = E; this.rangeI = 0};
-        
+
+        let systemDuration = 0
         function game(_mapXSize, _mapYSize, _playerMapI, _mapDiggeds, _mapMonsters, _mapOres) {
             let array = []
             Game = {state:1, map_xSize:_mapXSize, map_ySize:_mapYSize, map_iL:_mapXSize * _mapYSize, ore_diggeds:[], projectiles:[]};
@@ -70,6 +71,7 @@
             
             console.log(Game);
             gameHUDText = ""
+            systemDuration = 0
             gameResume()
         };
 
@@ -139,7 +141,7 @@
         };
         
         function level(_i) {
-            if (_i == 1) {game(15, 15, 0, 1, 10, 10)};
+            if (_i == 1) {game(15, 15, 0, 1, 10, 10); changeText(0, "System", "Mine All $ (Orb) & Avoid ! (Monster)")};
         };
 
         //Player Action
@@ -165,9 +167,10 @@
                 /*Change Tool if (Number(event.key)) {player_tool = Number(event.key); console.log(player_tool)*/
             } else if (game_state == 0) {if (event.key == 0) {gameMenu(-1)} else if (Number(event.key)) {gameMenu(Number(event.key))}}});
 
-        //Game
+        //Game Update
         function gameResume() {if (Game.state == 1) {game_clock = setInterval(game_update, 20)}; changeColor(false, "Scene", 1); game_state = 1; changeText(0, "HUD", gameHUDText)};
         function gamePause() {if (typeof game_clock !== "undefined") {clearInterval(game_clock)}; changeColor(false, "Scene", 2); game_state = 0; menu_i = 0; gameMenu()};
+
         function game_update() {
             if (game_state) {
                 //Generate Scene
@@ -180,6 +183,10 @@
     
                 //Projectile Code
                 Game.projectiles.forEach(Projectile => {/*Move Projectile*/ if (!Game.map_borders.includes(Projectile.position) && Game.map_diggeds.includes(Projectile.position) && Projectile.range && Projectile.rangeI < Projectile.range) {Projectile.position += Projectile.direction; Projectile.rangeI += 1} else {/*Dig Soft Block*/ if (!Game.map_diggeds.includes(Projectile.position) && Projectile.destroyWall) {Game.map_diggeds.push(Projectile.position)}; /*Dig Ore*/ if (Game.ores.includes(Projectile.position) && Projectile.destroyWall) {Game.ore_diggeds.push(Projectile.position); Game.ores.splice(Game.ores.indexOf(Projectile.position), 1)} /*Delete Projectile*/ Game.projectiles.splice(Game.projectiles.indexOf(this), 1)}});
+
+                //System
+                if (systemDuration >= 100) {changeText(0, "System", "")} else {systemDuration++}
+                //Add brought back system text when unpaused please.
             };   
         };
     </script>

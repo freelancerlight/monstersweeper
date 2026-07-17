@@ -12,11 +12,11 @@
     <body id="Main">
         <p id="Scene">Monstersweeper</p>
         <p id="System">🄯2026 Jie (杰) 3JUMPAB</p>
-        <p id="HUD">Press "`" to open the game menu.</p>
+        <p id="HUD"></p>
     </body>
     <script>
         //Variable Setup
-        let dev = 0, Game = {}, game_state = 1, game_clock = 0, menu_i = 0;
+        let dev = 0, Game = {}, game_state = 1, game_clock = 0, menu_i = 0, gameHUDText = "Press ( ` ) key to open the game menu.";
 
         //function defaultSettings() {settings_playerControls.push(...default_playerControls)};
         function changeSetting(changeSetting_name, changeSetting_v) {localStorage.setItem(changeSetting_name, changeSetting_v)};
@@ -26,7 +26,9 @@
         if (localStorage.playerControls !== null && localStorage.playerControls !== undefined) {settings_playerControls.push(...JSON.parse(localStorage.playerControls))} else {settings_playerControls.push(...default_playerControls)};
         const settings_gameBackgroundColors = ["#000000", "#606060", null, "#404040", null, "#ffffff"];
         const settings_gameColors = [null, "#000000", "#808080", "#ffffff"];
-
+        
+        changeText(0, "HUD", gameHUDText)
+        
         changeColor(true, "Main", 5);
         /*changeColor(false, "Scene", 1);
         changeColor(false, "HUD", 3);*/
@@ -35,7 +37,7 @@
         
         function playerKeyCheck(playerKeyCheck_key) {if (event.key == playerKeyCheck_key) {return true} else {return false}};
         function changeColor(changeColor_background, changeColor_v, changeColor_i) {if (changeColor_background) {document.getElementById(changeColor_v).style.backgroundColor = settings_gameBackgroundColors[changeColor_i]} else {document.getElementById(changeColor_v).style.color = settings_gameColors[changeColor_i]}};
-
+        
         function changeText(changeText_type, changeText_name, changeText_v) {if (changeText_type) {document.getElementById(changeText_name).innerHTML += changeText_v} else {document.getElementById(changeText_name).innerHTML = changeText_v}};
         
         //Functions 
@@ -67,6 +69,7 @@
             Game.ores = array
             
             console.log(Game);
+            gameHUDText = ""
             gameResume()
         };
 
@@ -100,6 +103,7 @@
         const GameMenu = [
             new gameMenuEmptyObject(10, "New Game"),
                 {id:110, name:"Chapter 1", function:function() {level(1)}},
+                {id:210, name:"Debug Chapter", function:function() {level(1)}},
             new gameMenuEmptyObject(20, "Settings"),
                 new gameMenuEmptyObject(120, "Controls"),
                     new gameMenuRebindObject(1120, "Move Left", 0),
@@ -162,7 +166,7 @@
             } else if (game_state == 0) {if (event.key == 0) {gameMenu(-1)} else if (Number(event.key)) {gameMenu(Number(event.key))}}});
 
         //Game
-        function gameResume() {if (Game.state == 1) {game_clock = setInterval(game_update, 20)}; changeColor(false, "Scene", 1); game_state = 1; changeText(0, "HUD", "")};
+        function gameResume() {if (Game.state == 1) {game_clock = setInterval(game_update, 20)}; changeColor(false, "Scene", 1); game_state = 1; changeText(0, "HUD", gameHUDText)};
         function gamePause() {if (typeof game_clock !== "undefined") {clearInterval(game_clock)}; changeColor(false, "Scene", 2); game_state = 0; menu_i = 0; gameMenu()};
         function game_update() {
             if (game_state) {

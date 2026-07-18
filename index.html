@@ -47,7 +47,7 @@
         let systemDuration = 0
         function game(_mapXSize, _mapYSize, _playerMapI, _mapDiggeds, _mapMonsters, _mapOres) {
             let array = []
-            Game = {state:1, map_xSize:_mapXSize, map_ySize:_mapYSize, map_iL:_mapXSize * _mapYSize, ore_diggeds:[], projectiles:[]};
+            Game = {state:1, map_xSize:_mapXSize, map_ySize:_mapYSize, map_iL:_mapXSize * _mapYSize, monsters:[], ore_diggeds:[], projectiles:[]};
 
             //Generate Map Borders
             for (let i = 1; i <= Game.map_xSize; i++) {array.push(i); array.push(Game.map_iL - i + 1)};
@@ -62,6 +62,7 @@
             Game.map_diggeds = array
 
             //Generate Monster
+            //Change it!
             if (Array.isArray(_mapMonsters)) {Game.monsters = [_mapMonsters]} else {array = []; for (let i = 0; i < _mapMonsters;) {/*Generate Monster*/ let v = Math.ceil(Math.random() * Game.map_iL); /*Check*/ if (!Game.map_borders.includes(v) && !Game.map_diggeds.includes(v) && !array.includes(v)) {array.push(v); i++}}};
             Game.monsters = array
 
@@ -74,6 +75,8 @@
             systemDuration = 0
             gameResume()
         };
+
+        let directions = [-Game.map_xSize, 1, Game.map_xSize, -1];
 
         //Game Menu Setup
         let gameMenu_using = false
@@ -184,7 +187,8 @@
                 if (systemDuration >= 100) {changeText(0, "System", "")} else {systemDuration++};
     
                 //Monster Code
-                //monsters.forEach(monster => {if (!monster.freed) {monster.freed = true}; /*Detection*/ if (!map_diggeds.includes(monster.mapI)) {for (let direction_i = 0; direction_i < 4; direction_i++) {for (let i = monster.mapI; !map_diggeds.includes(i) && !map_borders.includes(i); i += directions[direction_i]) {console.log(monster.mapI); /*console.log(map_diggeds.includes(i))*/}}} /*&& !map_borders.includes(monster.mapI + 1) && map_diggeds.includes(monster.mapI + monster.direction)) {monster.mapI += monster.direction}*/});
+                for (let monster_i = 0; monster_i < Game.monsters.length; monster_i++) {if (!Game.map_diggeds.includes(Game.monsters[monster_i].mapI)) {console.log(Game.monsters[monster_i].mapI)}}
+                //Game.monsters.forEach(e => {if (!e.freed) {e.freed = true}; /*Detection*/ if (!Game.map_diggeds.includes(e.mapI)) {for (let direction_i = 0; direction_i < 4; direction_i++) {for (let i = 0; i < 4; i++) {console.log(e.mapI); console.log(Game.map_diggeds.includes(i))}}} /*&& !map_borders.includes(monster.mapI + 1) && map_diggeds.includes(monster.mapI + monster.direction)) {monster.mapI += monster.direction}*/});
     
                 //Projectile Code
                 Game.projectiles.forEach(Projectile => {/*Move Projectile*/ if (!Game.map_borders.includes(Projectile.position) && Game.map_diggeds.includes(Projectile.position) && Projectile.range && Projectile.rangeI < Projectile.range) {Projectile.position += Projectile.direction; Projectile.rangeI += 1} else {/*Dig Soft Block*/ if (!Game.map_diggeds.includes(Projectile.position) && Projectile.destroyWall) {Game.map_diggeds.push(Projectile.position)}; /*Dig Ore*/ if (Game.ores.includes(Projectile.position) && Projectile.destroyWall) {Game.ore_diggeds.push(Projectile.position); Game.ores.splice(Game.ores.indexOf(Projectile.position), 1)} /*Delete Projectile*/ Game.projectiles.splice(Game.projectiles.indexOf(this), 1)}});

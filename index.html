@@ -105,7 +105,7 @@
         const GameMenu = [
             new gameMenuEmptyObject(10, "New Game"),
                 {id:110, name:"Chapter 1", function:function() {level(1)}},
-                {id:210, name:"Debug Chapter", function:function() {level(1)}},
+                {id:210, name:"Dev Test", function:function() {level(2)}},
             new gameMenuEmptyObject(20, "Settings"),
                 new gameMenuEmptyObject(120, "Controls"),
                     new gameMenuRebindObject(1120, "Move Left", 0),
@@ -140,8 +140,9 @@
             }
         };
         
-        function level(_i) {
-            if (_i == 1) {game(15, 15, 0, 1, 10, 10); changeText(0, "System", "Mine All $ (Orb) & Avoid ! (Monster)")};
+        function level(level_i) {
+            if (level_i == 1) {game(15, 15, 0, 1, 10, 10); changeText(0, "System", "Mine All $ (Orb) & Avoid ! (Monster).")};
+            if (level_i == 2) {game(15, 15, 0, 1, 10, 10); changeText(0, "System", "Dev Chapter, expect unstable experience.")};
         };
 
         //Player Action
@@ -175,18 +176,18 @@
             if (game_state) {
                 //Generate Scene
                 let scene_text = "";
-                for (let scene_i = 1, i_x = 0; scene_i <= Game.map_iL; scene_i++) {/*Player*/ if (scene_i == Game.player_mapI) {scene_text += "@"} /*Border*/ else if (Game.map_borders.includes(scene_i)) {if (dev) {scene_text += "X"} else {continue}} /*Projectile*/ else if (Game.projectiles.some(Projectile => Projectile.position === scene_i)) {scene_text += "%"} /*Ore*/ else if (Game.ores.includes(scene_i)) {scene_text += "$"} /*Ore Digged*/ else if (Game.ore_diggeds.includes(scene_i)) {scene_text += "*"} /*Wall*/ else if (!Game.map_diggeds.includes(scene_i)) {scene_text += "#"} /*Monster*/ else if (Game.monsters.includes(scene_i)) {scene_text += "!"} /*Pattern*/ else {let _pattern = 0; for (let y_i = -1; y_i < 2; y_i++) {for (let x_i = -1; x_i < 2; x_i++) {if (Game.monsters.includes(scene_i - x_i - y_i * Game.map_xSize)) {_pattern++}}}; (_pattern > 0) ? scene_text += _pattern : /*Empty*/ scene_text += "."}; /*Next Loop*/ i_x++; /*Add Line Break*/ if ((i_x == Game.map_xSize && dev) || (i_x == Game.map_xSize - 2 && !dev)) {scene_text += "<br>"; i_x = 0}};
+                //fix please
+                for (let scene_i = 1, i_x = 0; scene_i <= Game.map_iL; scene_i++) {/*Player*/ if (scene_i == Game.player_mapI) {scene_text += "@"} /*Border*/ else if (Game.map_borders.includes(scene_i)) {if (dev) {scene_text += "X"} else {continue}} /*Projectile*/ else if (Game.projectiles.some(Projectile => Projectile.position === scene_i)) {scene_text += "%"} /*Ore*/ else if (Game.ores.includes(scene_i)) {scene_text += "$"} /*Ore Digged*/ else if (Game.ore_diggeds.includes(scene_i)) {scene_text += "*"} /*Wall*/ else if (!Game.map_diggeds.includes(scene_i)) {scene_text += "#"} /*Monster*/ else if (Game.monsters.includes(scene_i)) {scene_text += "!"} /*Pattern*/ else {let _pattern = 0, _isNearPlayer = false; for (let y_i = -1; y_i < 2; y_i++) {for (let x_i = -1; x_i < 2; x_i++) {if (Game.monsters.includes(scene_i - x_i - y_i * Game.map_xSize)) {_pattern++}; if (Game.player_mapI === scene_i - x_i - y_i * Game.map_xSize) {_isNearPlayer = true}}}; (_pattern > 0 && _isNearPlayer) ? scene_text += _pattern : /*Empty*/ scene_text += "."}; /*Next Loop*/ i_x++; /*Add Line Break*/ if ((i_x == Game.map_xSize && dev) || (i_x == Game.map_xSize - 2 && !dev)) {scene_text += "<br>"; i_x = 0}};
                 changeText(0, "Scene", scene_text);
+
+                //System
+                if (systemDuration >= 100) {changeText(0, "System", "")} else {systemDuration++};
     
                 //Monster Code
                 //monsters.forEach(monster => {if (!monster.freed) {monster.freed = true}; /*Detection*/ if (!map_diggeds.includes(monster.mapI)) {for (let direction_i = 0; direction_i < 4; direction_i++) {for (let i = monster.mapI; !map_diggeds.includes(i) && !map_borders.includes(i); i += directions[direction_i]) {console.log(monster.mapI); /*console.log(map_diggeds.includes(i))*/}}} /*&& !map_borders.includes(monster.mapI + 1) && map_diggeds.includes(monster.mapI + monster.direction)) {monster.mapI += monster.direction}*/});
     
                 //Projectile Code
                 Game.projectiles.forEach(Projectile => {/*Move Projectile*/ if (!Game.map_borders.includes(Projectile.position) && Game.map_diggeds.includes(Projectile.position) && Projectile.range && Projectile.rangeI < Projectile.range) {Projectile.position += Projectile.direction; Projectile.rangeI += 1} else {/*Dig Soft Block*/ if (!Game.map_diggeds.includes(Projectile.position) && Projectile.destroyWall) {Game.map_diggeds.push(Projectile.position)}; /*Dig Ore*/ if (Game.ores.includes(Projectile.position) && Projectile.destroyWall) {Game.ore_diggeds.push(Projectile.position); Game.ores.splice(Game.ores.indexOf(Projectile.position), 1)} /*Delete Projectile*/ Game.projectiles.splice(Game.projectiles.indexOf(this), 1)}});
-
-                //System
-                if (systemDuration >= 100) {changeText(0, "System", "")} else {systemDuration++}
-                //Add brought back system text when unpaused please.
             };   
         };
     </script>

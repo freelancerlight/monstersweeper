@@ -41,7 +41,7 @@
         function changeText(changeText_type, changeText_name, changeText_v) {if (changeText_type) {document.getElementById(changeText_name).innerHTML += changeText_v} else {document.getElementById(changeText_name).innerHTML = changeText_v}};
         
         //Functions 
-        function Monster(A) {this.mapI = A, this.direction = 0,this.freed = false};
+        function Monster(A) {this.mapI = A, this.mapIF = 0, this.direction = 0,this.freed = false};
         function Projectile(A, B, C, D, E) {this.position = A; this.direction = B; this.range = C; this.destroyWall = D; this.damage = E; this.rangeI = 0};
 
         let systemDuration = 0
@@ -66,8 +66,8 @@
             if (Array.isArray(_mapMonsters)) {Game.monsters = [_mapMonsters]} else {array = []; for (let i = 0; i < _mapMonsters;) {/*Generate Monster*/ let v = Math.ceil(Math.random() * Game.map_iL); /*Check*/ if (!Game.map_borders.includes(v) && !Game.map_diggeds.includes(v) && !Game.monsters.some(e => e.mapI === v)) {Game.monsters.push(new Monster(v)); i++}}};
 
             //Generate Ores
-            if (Array.isArray(_mapOres)) {Game.ores = [_mapOres]} else {array = []; for (let i = 0; i < _mapOres;) {/*Generate Ore*/ let v = Math.ceil(Math.random() * Game.map_iL); /*Check*/ if (!Game.map_borders.includes(v) && !Game.map_diggeds.includes(v) && !Game.monsters.includes(v) && !array.includes(v)) {array.push(v); i++}}};
-            Game.ores = array
+            if (Array.isArray(_mapOres)) {Game.ores = [_mapOres]} else {array = []; for (let i = 0; i < _mapOres;) {/*Generate Ore*/ let v = Math.ceil(Math.random() * Game.map_iL); /*Check*/ if (!Game.map_borders.includes(v) && !Game.map_diggeds.includes(v) && !Game.monsters.some(e => e.mapI === v) && !array.includes(v)) {array.push(v); i++}}};
+            Game.ores = array;
             
             console.log(Game);
             gameHUDText = ""
@@ -186,7 +186,7 @@
                 if (systemDuration >= 100) {changeText(0, "System", "")} else {systemDuration++};
     
                 //Monster Code
-                for (let monster_i = 0; monster_i < Game.monsters.length; monster_i++) {if (!Game.map_diggeds.includes(Game.monsters[monster_i].mapI)) {/*console.log(Game.monsters[monster_i].mapI)*/}};
+                for (let monster_i = 0; monster_i < Game.monsters.length; monster_i++) {const monster_v = Game.monsters[monster_i]; if (Game.map_diggeds.includes(monster_v.mapI)) {console.log("hmm"); for (let direction_i = 0; direction_i < 4; direction_i++) {for (let i = monster_v.mapI; Game.map_diggeds.includes(i) || Game.map_borders.includes(i); i += directions[direction_i]) {if (Game.player_mapI == i) {if (monster_v.mapIF >= 1) {monster_v.mapI += directions[direction_i]; monster_v.mapIF = 0} else {monster_v.mapIF += 0.01}}; console.log(monster_v.mapIF)}}}};
                 //Game.monsters.forEach(e => {if (!e.freed) {e.freed = true}; /*Detection*/ if (!Game.map_diggeds.includes(e.mapI)) {for (let direction_i = 0; direction_i < 4; direction_i++) {for (let i = 0; i < 4; i++) {console.log(e.mapI); console.log(Game.map_diggeds.includes(i))}}} /*&& !map_borders.includes(monster.mapI + 1) && map_diggeds.includes(monster.mapI + monster.direction)) {monster.mapI += monster.direction}*/});
     
                 //Projectile Code

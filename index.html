@@ -17,6 +17,7 @@
     <script>
         //Variable Setup
         let dev = 0, Game = {}, game_state = 1, game_clock = 0, menu_i = 0, gameHUDText = "Press ( ` ) key to open the game menu.", directions = [];
+        function randomTest() {return Math.round(Math.random()) - Math.round(Math.random())};
 
         //function defaultSettings() {settings_playerControls.push(...default_playerControls)};
         function changeSetting(changeSetting_name, changeSetting_v) {localStorage.setItem(changeSetting_name, changeSetting_v)};
@@ -41,7 +42,7 @@
         function changeText(changeText_type, changeText_name, changeText_v) {if (changeText_type) {document.getElementById(changeText_name).innerHTML += changeText_v} else {document.getElementById(changeText_name).innerHTML = changeText_v}};
         
         //Functions 
-        function Monster(A) {this.mapI = A, this.mapIF = 0, this.direction = 0,this.freed = false};
+        function Monster(A) {this.mapI = A, this.mapIF = 0, this.direction = 0, this.direction_i = 0, this.direction_behind = 0, this.freed = false};
         function Projectile(A, B, C, D, E) {this.position = A; this.direction = B; this.range = C; this.destroyWall = D; this.damage = E; this.rangeI = 0};
 
         let systemDuration = 0
@@ -72,7 +73,7 @@
             console.log(Game);
             gameHUDText = "";
             systemDuration = 0;
-            directions = [-Game.map_xSize, 1, Game.map_xSize, -1]
+            directions = [-Game.map_xSize, 1, Game.map_xSize, -1];
             gameResume();
         };
 
@@ -106,7 +107,7 @@
         const GameMenu = [
             new gameMenuEmptyObject(10, "New Game"),
                 {id:110, name:"Chapter 1", function:function() {level(1)}},
-                {id:210, name:"Dev Test", function:function() {level(2)}},
+                //{id:210, name:"Dev Test", function:function() {level(2)}},
             new gameMenuEmptyObject(20, "Settings"),
                 new gameMenuEmptyObject(120, "Controls"),
                     new gameMenuRebindObject(1120, "Move Left", 0),
@@ -177,7 +178,6 @@
             if (game_state) {
                 //Generate Scene
                 let scene_text = "";
-                //fix please
                 for (let scene_i = 1, i_x = 0; scene_i <= Game.map_iL; scene_i++) {/*Player*/ if (scene_i == Game.player_mapI) {scene_text += "@"} /*Border*/ else if (Game.map_borders.includes(scene_i)) {if (dev) {scene_text += "X"} else {continue}} /*Projectile*/ else if (Game.projectiles.some(e => e.position === scene_i)) {scene_text += "%"} /*Ore*/ else if (Game.ores.includes(scene_i)) {scene_text += "$"} /*Wall*/ else if (!Game.map_diggeds.includes(scene_i)) {scene_text += "#"} /*Monster*/ else if (Game.monsters.some(e => e.mapI === scene_i)) {scene_text += "!"} /*Ore Digged*/ else if (Game.ore_diggeds.includes(scene_i)) {scene_text += "*"} /*Pattern*/ else {let _pattern = 0, _isNearPlayer = false; for (let y_i = -1; y_i < 2; y_i++) {for (let x_i = -1; x_i < 2; x_i++) {if (Game.monsters.some(e => (e.mapI === scene_i - x_i - y_i * Game.map_xSize) && !e.freed) ) {_pattern++}; if (Game.player_mapI === scene_i - x_i - y_i * Game.map_xSize) {_isNearPlayer = true}}}; (_pattern > 0 && _isNearPlayer) ? scene_text += _pattern : /*Empty*/ scene_text += "."}; /*Next Loop*/ i_x++; /*Add Line Break*/ if ((i_x == Game.map_xSize && dev) || (i_x == Game.map_xSize - 2 && !dev)) {scene_text += "<br>"; i_x = 0}};
                 changeText(0, "Scene", scene_text);
 
@@ -189,8 +189,13 @@
                     const monster_v = Game.monsters[monster_i];
                     if (Game.map_diggeds.includes(monster_v.mapI)) {
                         monster_v.freed = true;
-                        console.log(monster_v.freed)
-                        for (let direction_i = 0; direction_i < 4; direction_i++) {for (let i = monster_v.mapI; Game.map_diggeds.includes(i) || Game.map_borders.includes(i); i += directions[direction_i]) {if (Game.player_mapI == i) {if (monster_v.mapIF >= 1) {monster_v.mapI += directions[direction_i]; monster_v.mapIF = 0} else {monster_v.mapIF += 0.01}}}};
+                        
+                        monster_v.direction = (((monster_v.direction + randomTest()) % 4) + 4) % 4;
+                        console.log(monster_v.direction);
+                        let test_direction = directions[monster_v.direction]
+                        if (Game.map_diggeds.includes(monster_v.mapI + test_direction) && !Game.map_borders.includes(monster_v.mapI + test_direction)) {monster_v.mapI += test_direction};
+                        //console.log(monster_v.direction);
+                        //for (let direction_i = 0; direction_i < 4; direction_i++) {for (let i = monster_v.mapI; Game.map_diggeds.includes(i) || Game.map_borders.includes(i); i += directions[direction_i]) {if (Game.player_mapI == i) {if (monster_v.mapIF >= 1) {monster_v.mapI += directions[direction_i]; monster_v.mapIF = 0} else {monster_v.mapIF += 0.01}}}};
                     };
                 };
     

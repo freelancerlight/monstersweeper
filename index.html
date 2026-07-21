@@ -191,10 +191,11 @@
                     if (Game.map_diggeds.includes(monster_v.mapI)) {
                         monster_v.freed = true;
 
-                        //Add last player position & direction pls
-                        function test2() {for (let i = monster_v.mapI; Game.map_diggeds.includes(i) && !Game.map_borders.includes(i); i += directions[monster_v.direction]) {if (Game.player_mapI == i) {return true}}};
-                        if (!test2()) {monster_v.direction = (((monster_v.direction + randomTest()) % 4) + 4) % 4};
-                        console.log(monster_v.direction);
+                        //Add last player direction please
+                        for (let i = monster_v.mapI; Game.map_diggeds.includes(i) && !Game.map_borders.includes(i); i += directions[monster_v.direction]) {if (Game.player_mapI == i) {monster_v.playerLastMapI = i}};
+                        if (monster_v.mapI == monster_v.playerLastMapI) {monster_v.playerLastMapI = 0}
+                        if (monster_v.playerLastMapI == 0) {monster_v.direction = (((monster_v.direction + randomTest()) % 4) + 4) % 4};
+                        console.log(monster_v.playerLastMapI);
                         let test_direction = directions[monster_v.direction];
                         
                         if (movementCheck(monster_v.mapI, test_direction)) {if (monster_v.mapIF >= 1) {monster_v.mapI += test_direction; monster_v.mapIF = 0} else {monster_v.mapIF += 0.1}};

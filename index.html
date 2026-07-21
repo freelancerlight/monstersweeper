@@ -107,7 +107,7 @@
         const GameMenu = [
             new gameMenuEmptyObject(10, "New Game"),
                 {id:110, name:"Chapter 1", function:function() {level(1)}},
-                //{id:210, name:"Dev Test", function:function() {level(2)}},
+                {id:210, name:"Dev Test", function:function() {level(2)}},
             new gameMenuEmptyObject(20, "Settings"),
                 new gameMenuEmptyObject(120, "Controls"),
                     new gameMenuRebindObject(1120, "Move Left", 0),
@@ -147,6 +147,8 @@
             if (level_i == 2) {game(15, 15, 0, 1, 10, 10); changeText(0, "System", "Dev Chapter, expect unstable experience.")};
         };
 
+        function movementCheck(movementCheck_mapI , movementCheck_direction) {return !Game.map_borders.includes(movementCheck_mapI + movementCheck_direction) && Game.map_diggeds.includes(movementCheck_mapI + movementCheck_direction)};
+
         //Player Action
         let player_tool = 1;
         window.addEventListener("keydown", function (event) {
@@ -158,11 +160,10 @@
             
             if (game_state && Game.state) {
                 function playerKey(playerKey_v) {return Number(settings_playerControls[playerKey_v].includes(event.key))};
-                //function player_actionKey(_playerActionKey) {return Number(event.key == player_key(_playerActionKey))}
                 function playerGeneralAction(playerGeneralAction_left, playerGeneralAction_right, playerGeneralAction_down, playerGeneralAction_up) {return (playerKey(playerGeneralAction_right) - playerKey(playerGeneralAction_left)) + (Game.map_xSize * (playerKey(playerGeneralAction_down) - playerKey(playerGeneralAction_up)))}
-                function playerMovement(_direction) {if (!Game.map_borders.includes(Game.player_mapI + _direction) && Game.map_diggeds.includes(Game.player_mapI + _direction)) {Game.player_mapI += _direction}};
-                
-                playerMovement(playerGeneralAction(0, 1, 2, 3));
+
+                const move_v = playerGeneralAction(0, 1, 2, 3);
+                if (movementCheck(Game.player_mapI, move_v)) {Game.player_mapI += move_v};
                 
                 const v_event = playerGeneralAction(4, 5, 6, 7);
                 if (v_event != 0) {Game.projectiles.push(new Projectile(/*_position*/ Game.player_mapI, /*_direction*/ v_event, /*_range*/ 1, /*_destroyWall*/ true, /*_damage*/ false))};
@@ -192,9 +193,9 @@
                         
                         monster_v.direction = (((monster_v.direction + randomTest()) % 4) + 4) % 4;
                         console.log(monster_v.direction);
-                        let test_direction = directions[monster_v.direction]
-                        if (Game.map_diggeds.includes(monster_v.mapI + test_direction) && !Game.map_borders.includes(monster_v.mapI + test_direction)) {monster_v.mapI += test_direction};
-                        //console.log(monster_v.direction);
+                        let test_direction = directions[monster_v.direction];
+                        if (movementCheck(monster_v.mapI, test_direction)) {monster_v.mapI += test_direction};
+                        console.log(monster_v.direction);
                         //for (let direction_i = 0; direction_i < 4; direction_i++) {for (let i = monster_v.mapI; Game.map_diggeds.includes(i) || Game.map_borders.includes(i); i += directions[direction_i]) {if (Game.player_mapI == i) {if (monster_v.mapIF >= 1) {monster_v.mapI += directions[direction_i]; monster_v.mapIF = 0} else {monster_v.mapIF += 0.01}}}};
                     };
                 };

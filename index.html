@@ -192,7 +192,7 @@
                         monster_v.freed = true;
 
                         //Add last player position & direction pls
-                        function test2() {for (let i = monster_v.mapI; Game.map_diggeds.includes(i) || !Game.map_borders.includes(i); i += directions[monster_v.direction]) {if (Game.player_mapI == i) {return true}}};
+                        function test2() {for (let i = monster_v.mapI; Game.map_diggeds.includes(i) && !Game.map_borders.includes(i); i += directions[monster_v.direction]) {if (Game.player_mapI == i) {return true}}};
                         if (!test2()) {monster_v.direction = (((monster_v.direction + randomTest()) % 4) + 4) % 4};
                         console.log(monster_v.direction);
                         let test_direction = directions[monster_v.direction];

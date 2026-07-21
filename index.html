@@ -42,7 +42,7 @@
         function changeText(changeText_type, changeText_name, changeText_v) {if (changeText_type) {document.getElementById(changeText_name).innerHTML += changeText_v} else {document.getElementById(changeText_name).innerHTML = changeText_v}};
         
         //Functions 
-        function Monster(A) {this.mapI = A, this.mapIF = 0, this.direction = 0, this.direction_i = 0, this.direction_behind = 0, this.freed = false};
+        function Monster(A) {this.mapI = A, this.mapIF = 0, this.direction = 0, this.direction_i = 0, this.playerLastMapI = 0, this.freed = false};
         function Projectile(A, B, C, D, E) {this.position = A; this.direction = B; this.range = C; this.destroyWall = D; this.damage = E; this.rangeI = 0};
 
         let systemDuration = 0
@@ -190,11 +190,14 @@
                     const monster_v = Game.monsters[monster_i];
                     if (Game.map_diggeds.includes(monster_v.mapI)) {
                         monster_v.freed = true;
-                        
-                        monster_v.direction = (((monster_v.direction + randomTest()) % 4) + 4) % 4;
+
+                        //Add last player position & direction pls
+                        function test2() {for (let i = monster_v.mapI; Game.map_diggeds.includes(i) || !Game.map_borders.includes(i); i += directions[monster_v.direction]) {if (Game.player_mapI == i) {return true}}};
+                        if (!test2()) {monster_v.direction = (((monster_v.direction + randomTest()) % 4) + 4) % 4};
                         console.log(monster_v.direction);
                         let test_direction = directions[monster_v.direction];
-                        if (movementCheck(monster_v.mapI, test_direction)) {monster_v.mapI += test_direction};
+                        
+                        if (movementCheck(monster_v.mapI, test_direction)) {if (monster_v.mapIF >= 1) {monster_v.mapI += test_direction; monster_v.mapIF = 0} else {monster_v.mapIF += 0.1}};
                         console.log(monster_v.direction);
                         //for (let direction_i = 0; direction_i < 4; direction_i++) {for (let i = monster_v.mapI; Game.map_diggeds.includes(i) || Game.map_borders.includes(i); i += directions[direction_i]) {if (Game.player_mapI == i) {if (monster_v.mapIF >= 1) {monster_v.mapI += directions[direction_i]; monster_v.mapIF = 0} else {monster_v.mapIF += 0.01}}}};
                     };
